@@ -13,27 +13,35 @@ import mymodule
 # 2 PyCharm Project from github: .py script that is github, made script & requirements.txt, commit & pushed
 # 3 Log into streamlit, and app is there...
 
-#### start of paste
+# PRIORS - > USER INPUT
+st.header('When you enter the geothermal lottery without further information?')
+st.subheader('What\'s the Prior Probability $Pr(.)$ of a POSITIVE geothermal site?')
+Pr_prior_POS_demo = np.linspace(0.05,1,20) #mymodule.Prior_probability_binary()
+
+#### start of paste  -> CHANGE to input
 count_ij = np.zeros((2,10))
 value_array = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
 st.write('value_array', value_array)
-## Calculate Vprior
 
+## Calculate Vprior
 #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
 value_drill_DRYHOLE = np.linspace(100, -1e6,10)
 
-# PRIORS - > USER INPUT
-# st.subheader('Change the Gaussian Prior for chosen attribute')
-# X_unif_prior, X_wideNorm_prior, X_narNorm_prior  = mymodule.Prior_probability(x_sampled, X_train, x_cur)
-st.subheader('Change the Prior of POSITIVE Geothermal site')
-Pr_prior_POS_demo = mymodule.Prior_probability_binary()
-
 # This function can be called with multiple values of "dry hole"
-vprior_INPUT_demo = mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], value_array) #, value_drill_DRYHOLE[-1]       
-st.header('Should you enter the geothermal lottery?')
-st.subheader('Yes if Vprior is positive. Vprior '+str(vprior_INPUT_demo))
+vprior_INPUT_demo = mymodule.f_VPRIOR([1-Pr_prior_POS_demo[0],Pr_prior_POS_demo[0]], value_array, value_drill_DRYHOLE[-1])       
+# l2 = list(map(lambda v: v ** 2, l1))
+vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo[0],Pr_prior_POS_demo[0]], 
+                                                              value_array,vv),value_drill_DRYHOLE))
+st.subheader('Yes if Vprior is positive. Vprior with $Pr(POSITIVE)$='+str(Pr_prior_POS_demo[0]))
+
+firstfig = plt.figure()
+plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'ks')
+plt.ylabel('$V_{prior}$')
+plt.xlabel('Dryhole Cost')
+st.pyplot(firstfig)
 
 VPI = mymodule.Vperfect(Pr_prior_POS_demo, value_array)
+# VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
 st.subheader(r'''$VOI_{perfect}$ ='''+str(VPI)+' - '+(str(vprior_INPUT_demo)+' = '+str(VPI-vprior_INPUT_demo)))
 ### END OF PASTE
 
