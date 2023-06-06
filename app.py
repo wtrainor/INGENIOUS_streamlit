@@ -40,7 +40,7 @@ plt.ylabel('$V_{prior}$')
 plt.xlabel('Dryhole Cost')
 st.pyplot(firstfig)
 
-VPI = mymodule.Vperfect(Pr_prior_POS_demo, value_array)
+VPI = mymodule.Vperfect(Pr_prior_POS_demo[0], value_array)
 # VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
 st.subheader(r'''$VOI_{perfect}$ ='''+str(VPI)+' - '+(str(vprior_INPUT_demo)+' = '+str(VPI-vprior_INPUT_demo)))
 ### END OF PASTE
