@@ -307,12 +307,17 @@ def f_VPRIOR(PriorWeight, value_array_mod, *args):
     
     return Vprior
 
-def Vperfect(input_prior, value_array):
+def Vperfect(input_prior, value_array_mod, *args):
      ## $VOI_{Perfect}$ doesn't need data loop: diagonal of value matrix
-    st.write('Since you "know" when either subsurface condition occurs, you can pick the best ($\max\limits_a$) drilling altervative first ($v_a$).')
-    st.write(r'''$V_{perfect} =  \Sigma_{i=1}^2 Pr(X = x_i) \max\limits_a v_a(x_i) \ \  \forall a $''')
-    
-    VPI = np.sum(input_prior * np.max(value_array,0))
+
+    cur_value_drill_DRYHOLE = None 
+    for n in args:
+      cur_value_drill_DRYHOLE = n
+
+    if cur_value_drill_DRYHOLE is not None:    
+        value_array_mod[0,0] = cur_value_drill_DRYHOLE 
+     
+    VPI = np.sum(input_prior * np.max(value_array_mod,0))
 
     return VPI
 

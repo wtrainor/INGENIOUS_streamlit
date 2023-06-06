@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 import matplotlib.pyplot as plt
-
+from matplotlib import ticker
 
 import mymodule
 
@@ -16,34 +16,57 @@ import mymodule
 # PRIORS - > USER INPUT
 st.header('When you enter the geothermal lottery without further information?')
 st.subheader('What\'s the Prior Probability $Pr(.)$ of a POSITIVE geothermal site?')
-Pr_prior_POS_demo = np.linspace(0.05,1,20) #mymodule.Prior_probability_binary()
+Pr_prior_POS_demo = mymodule.Prior_probability_binary() #np.linspace(0.05,1,20) 
 
 #### start of paste  -> CHANGE to input
 count_ij = np.zeros((2,10))
 value_array = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
-st.write('value_array', value_array)
+#st.write('value_array', value_array)
 
 ## Calculate Vprior
 #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
 value_drill_DRYHOLE = np.linspace(100, -1e6,10)
 
-# This function can be called with multiple values of "dry hole"
-vprior_INPUT_demo = mymodule.f_VPRIOR([1-Pr_prior_POS_demo[0],Pr_prior_POS_demo[0]], value_array, value_drill_DRYHOLE[-1])       
+# NOT TRUE: This function can be called with multiple values of "dry hole"
+# vprior_INPUT_demo = mymodule.f_VPRIOR([1-Pr_prior_POS_demo[0],Pr_prior_POS_demo[0]], value_array, value_drill_DRYHOLE[-1])       
+vprior_INPUT_min = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[-1])  
+vprior_INPUT_max = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[0])   
+VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE[0])   
 # l2 = list(map(lambda v: v ** 2, l1))
-vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo[0],Pr_prior_POS_demo[0]], 
+vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
                                                               value_array,vv),value_drill_DRYHOLE))
-st.subheader('Yes if Vprior is positive. Vprior with $Pr(POSITIVE)$='+str(Pr_prior_POS_demo[0]))
+st.subheader('Yes if Vprior is positive. Vprior with $Pr(POSITIVE)$='+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
+st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(X = x_i)  v_a(x_i) \ \  \forall a $''')
 
-firstfig = plt.figure()
-plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'ks')
-plt.ylabel('$V_{prior}$')
+
+showVperfect = st.checkbox('Show Vperfect')
+
+firstfig, ax = plt.subplots()
+plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
+plt.ylabel('$V_{prior}$',fontsize=14)
 plt.xlabel('Dryhole Cost')
+if showVperfect:  
+    VPIlist = list(map(lambda uu: mymodule.Vperfect(Pr_prior_POS_demo, value_array,uu),value_drill_DRYHOLE))
+    # st.write('VPI',np.array(VPIlist),vprior_INPUT_demo_list)
+    VOIperfect = np.maximum((np.array(VPIlist)-np.array(vprior_INPUT_demo_list)),np.zeros(len(vprior_INPUT_demo_list)))
+    # VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
+    plt.plot(value_drill_DRYHOLE,VPIlist,'b', label='$V_{perfect}$')
+    plt.plot(value_drill_DRYHOLE,VOIperfect,'b--', label='$VOI_{perfect}$')
+plt.legend(loc=3)
+plt.ylim([vprior_INPUT_min,(VPI_max-vprior_INPUT_min)])
+# additional code before plt.show()
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+ax.yaxis.set_major_formatter(formatter)
+ax.xaxis.set_major_formatter(formatter)
+ax.xaxis.set_major_formatter('${x:1.0f}')
 st.pyplot(firstfig)
 
-VPI = mymodule.Vperfect(Pr_prior_POS_demo[0], value_array)
-# VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
-st.subheader(r'''$VOI_{perfect}$ ='''+str(VPI)+' - '+(str(vprior_INPUT_demo)+' = '+str(VPI-vprior_INPUT_demo)))
-### END OF PASTE
+if showVperfect:  
+    st.write(r'''$VOI_{perfect}$ = V_{perfect}-V_{prior}='''+str(VPIlist[0])+' - '+str(vprior_INPUT_demo_list[0]))
+    st.write('Since you "know" when either subsurface condition occurs, you can pick the best ($\max\limits_a$) drilling altervative first ($v_a$).')
+    st.write(r'''$V_{perfect} =  \Sigma_{i=1}^2 Pr(X = x_i) \max\limits_a v_a(x_i) \ \  \forall a $''')
+
 
 with st.sidebar:
             
