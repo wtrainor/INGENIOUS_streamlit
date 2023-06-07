@@ -1,1 +1,5 @@
--e .
+pandas
+streamlit
+numpy
+matplotlib
+seaborn
