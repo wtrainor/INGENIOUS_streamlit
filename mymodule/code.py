@@ -315,7 +315,7 @@ def Vperfect(input_prior, value_array_mod, *args):
       cur_value_drill_DRYHOLE = n
 
     if cur_value_drill_DRYHOLE is not None:    
-        value_array_mod[0,0] = cur_value_drill_DRYHOLE 
+        value_array_mod[1,0] = cur_value_drill_DRYHOLE 
      
     VPI = np.sum(input_prior * np.max(value_array_mod,0))
 
@@ -363,8 +363,9 @@ def f_VIMPERFECT(Prm_d,value_array,Pr_d,*args):
     ### If passed, adjust the value array for sensitivity testing. Put new values 
     # in the bottom row, first column and top row, last column
     if cur_value_drill_DRYHOLE is not None: 
-        value_array[-1,0] = cur_value_drill_DRYHOLE
-        value_array[0,-1] = cur_value_drill_DRYHOLE
+        # value_array[-1,0] = cur_value_drill_DRYHOLE
+        # value_array[0,-1] = cur_value_drill_DRYHOLE
+        value_array_mod[1,0] = cur_value_drill_DRYHOLE 
 
     v_a = []
 
