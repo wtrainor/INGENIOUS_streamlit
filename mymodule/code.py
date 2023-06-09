@@ -268,7 +268,7 @@ def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
     value_array[1,:] = [cost_drill_neg, profit_drill_pos] 
 
     value_array_df = pd.DataFrame(value_array,index={0:'nothing',1:'drill'},columns=['neg','pos'])
-    
+    # st.write('value_array_df',value_array_df,value_array)
     return value_array
 
 def f_VPRIOR(PriorWeight, value_array_mod, *args):  
@@ -288,13 +288,13 @@ def f_VPRIOR(PriorWeight, value_array_mod, *args):
       cur_value_drill_DRYHOLE = n
 
     if cur_value_drill_DRYHOLE is not None:    
-        value_array_mod[0,0] = cur_value_drill_DRYHOLE
+        value_array_mod[1,0] = cur_value_drill_DRYHOLE
         
     #print('modified value_array_mod',value_array_mod)    
     prm = PriorWeight #np.hstack((PriorWeight))
 
     v_a = []
-
+    # st.write('value_array_mod',value_array_mod)
     # Loop over all alternatives : Eventually be Nx * Ny alternatives
     for na in np.arange(0,np.shape(value_array_mod)[0]): # alternatives here are rows...
         cur_a = np.sum(prm*value_array_mod[na,:])
