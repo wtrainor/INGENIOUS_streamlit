@@ -53,7 +53,7 @@ if showVperfect:
     plt.plot(value_drill_DRYHOLE,VPIlist,'b', label='$V_{perfect}$')
     plt.plot(value_drill_DRYHOLE,VOIperfect,'b--', label='$VOI_{perfect}$')
 plt.legend(loc=3)
-plt.ylim([vprior_INPUT_min,(VPI_max-vprior_INPUT_min)])
+plt.ylim([vprior_INPUT_min,(VPI_max+20)]) #-vprior_INPUT_min
 # additional code before plt.show()
 formatter = ticker.ScalarFormatter()
 formatter.set_scientific(False)
