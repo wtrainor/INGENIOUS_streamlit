@@ -4,6 +4,7 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 from matplotlib import ticker
+import os
 
 import mymodule
 
@@ -71,21 +72,30 @@ if showVperfect:
 with st.sidebar:
             
     # LOCATION OF THIS FILE (Carbonate Aquifer only to start?)
-    uploaded_file = st.file_uploader("Choose a POS file",type=['csv'])
+    uploaded_files = st.file_uploader("Choose a POS :fire: & NEG :thumbsdown: file",type=['csv'],accept_multiple_files=True)
+    st.write(len(uploaded_files))
 
-    if uploaded_file is not None:
-        neg_upload_file = 'NEG'+str(uploaded_file.name[3:])
-        file_path = '/Users/wtrainor/Library/CloudStorage/OneDrive-NREL/INGENIOUS/INGENIOUS_streamlit/assets/'
-        st.write('Accompanying NEG file: ', file_path+neg_upload_file)
-    
-        df = pd.read_csv(uploaded_file)
-        dfN = pd.read_csv(file_path+neg_upload_file)
-        st.subheader('ML Nevada Data')
-        st.write('File preview...')
-        st.write(df.head())
+    if uploaded_files is not None and len(uploaded_files)==2:
+        for uploaded_file in uploaded_files:
+            # bytes_data = uploaded_file.read()
+            st.write("filename:", uploaded_file.name)
+            if uploaded_file.name[0:3]=='NEG':
+                neg_upload_file = uploaded_file
+                dfN = pd.read_csv(neg_upload_file)
+                st.write('NEG File preview...')
+                st.write(df.head())
+            elif uploaded_file.name[0:3]=='POS':
+                pos_upload_file = uploaded_file
+                df = pd.read_csv(pos_upload_file)
+            else:
+                st.write('Dude, you didn\'t select a POS and NEG file, try again')
 
-        st.subheader('Choose attribute for VOI calculation')
-        attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
+        if pos_upload_file.name[3:] != neg_upload_file.name[3:]:
+                st.write('You aren\'t comparing data from the same region. STOP!')
+        else:        
+            st.subheader('ML Nevada Data')
+            st.subheader('Choose attribute for VOI calculation')
+            attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
     # attribute0 = st.multiselect('What attributes would you like to calculate', df.columns,max_selections=2)
     
     # with st.echo(): # this prints out 
