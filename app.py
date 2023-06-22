@@ -83,7 +83,7 @@ with st.sidebar:
                 neg_upload_file = uploaded_file
                 dfN = pd.read_csv(neg_upload_file)
                 st.write('NEG File preview...')
-                st.write(df.head())
+                #st.write(df.head())
             elif uploaded_file.name[0:3]=='POS':
                 pos_upload_file = uploaded_file
                 df = pd.read_csv(pos_upload_file)
