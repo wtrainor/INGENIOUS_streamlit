@@ -49,7 +49,7 @@ def my_kdeplot(dfpair,x_cur,y_cur0,dfpairN=None):
     fig, axes = plt.subplots(figsize=(15,8),ncols=2,nrows=1)
 
     #### 1 variables ##### sns.histplot(data=penguins, x="flipper_length_mm", kde=True)
-    ph0=sns.histplot(data=dfpairN,x=x_cur,kde=True,fill=True,color='purple',alpha=0.4,ax=axes[0], 
+    ph0=sns.histplot(data=dfpairN,x=x_cur,kde=True,fill=True,color='r',alpha=0.4,ax=axes[0], 
                     thresh=0.05,common_norm=True) 
     ph0=sns.histplot(data=dfpair,x=x_cur,kde=True,fill=True,color='g',alpha=0.6,ax=axes[0], 
                     thresh=0.05,common_norm=True)
@@ -61,7 +61,7 @@ def my_kdeplot(dfpair,x_cur,y_cur0,dfpairN=None):
     ph=sns.kdeplot(data=dfpair,x=x_cur,y=y_cur0,fill=True,cmap='Greens',alpha=0.4,ax=axes[1], 
                     thresh=0.05,common_norm=True, cbar=True)
     
-    ph=sns.kdeplot(data=dfpairN,x=x_cur,y=y_cur0,fill=True,cmap='Purples',alpha=0.4,ax=axes[1],
+    ph=sns.kdeplot(data=dfpairN,x=x_cur,y=y_cur0,fill=True,cmap='Reds',alpha=0.4,ax=axes[1],
                     thresh=0.05,common_norm=True, cbar=True)
     axes[1].set_xlabel(str(x_cur), fontsize=15)
     axes[1].set_ylabel(str(y_cur0), fontsize=15)
