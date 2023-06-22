@@ -165,15 +165,15 @@ if uploaded_file is not None:
        {\tilde{x}_{j=0}}
         ''')
         st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
-        st.latex(r'''
-        {Pr(\tilde{X}} =\tilde{x}_j | \Theta = \theta_i ) \approx  \frac{count_{ij}}{row\ sum = 15}
-        ''')
+        st.latex(r''' {Pr(X} =x_j | \Theta = \theta_i ) = 
+        \frac{Pr(\Theta = \theta_i ) Pr(\Theta = \theta_i )| X=x_j)}{X=x_j}
+        ''')  #\approx  \frac{count_{ij}}{row\ sum } #\frac{Pr(\Theta = \theta_i ) }{Pr \tilde{X}} =\tilde{x}_j}
         
         #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
         #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
 
 
-        st.subheader('Change the Prior of POSITIVE Geothermal site')
+        st.subheader('Change the Prior '+r'''$Pr(\Theta = \theta_i )$'''+'of POSITIVE Geothermal site')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
         
         # POSTERIOR from WGC
