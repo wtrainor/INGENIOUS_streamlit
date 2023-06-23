@@ -90,7 +90,7 @@ with st.sidebar:
             else:
                 st.write('Dude, you didn\'t select a POS and NEG file, try again')
 
-        if pos_upload_file.name[3:] != neg_upload_file.name[3:]:
+        if pos_upload_file.name[3:7] != neg_upload_file.name[3:7]:
                 st.write('You aren\'t comparing data from the same region. STOP!')
         else:        
             st.subheader('ML Nevada Data')
@@ -146,6 +146,7 @@ if uploaded_file is not None:
         # # # OJO : may want to keep this off until have it for NEG 
         dfpairN = df_screenN#[(df_screenN['NegSite_Di'] <=round(NEG_distance_meters,-1))] 
         st.subheader('Calculate & Display Likelihoods')
+        st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
         mymodule.my_kdeplot(dfpair,x_cur,y_cur0,dfpairN)
         #waiting_condition = 1
         #while (waiting_condition):
@@ -159,22 +160,20 @@ if uploaded_file is not None:
         # Likelihood via KDE estimate
         predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0)
 
-        ## $Pr( \tilde{X} = \tilde{x}_j | X = x_i  )$
-        st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the interpretation ')
-        st.latex(r'''
-       {\tilde{x}_{j=0}}
-        ''')
-        st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
-        st.latex(r''' {Pr(X} =x_j | \Theta = \theta_i ) = 
-        \frac{Pr(\Theta = \theta_i ) Pr(\Theta = \theta_i )| X=x_j)}{X=x_j}
-        ''')  #\approx  \frac{count_{ij}}{row\ sum } #\frac{Pr(\Theta = \theta_i ) }{Pr \tilde{X}} =\tilde{x}_j}
-        
+      
         #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
         #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
 
 
-        st.subheader('Change the Prior '+r'''$Pr(\Theta = \theta_i )$'''+'of POSITIVE Geothermal site')
+        st.subheader('Change the Prior :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] of POSITIVE Geothermal site')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
+
+        st.subheader('Posterior ~ :blue[Prior] * Likelhood')
+        st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
+        # st.markdown(":blue[$Pr(Y= y_i)$]")
+        st.latex(r''' {Pr(X} =x_j | \Theta = \theta_i ) = 
+        \frac{Pr(\Theta = \theta_i ) Pr(\Theta = \theta_i )| X=x_j)}{X=x_j}
+        ''')  #\approx  \frac{count_{ij}}{row\ sum } #\frac{Pr(\Theta = \theta_i ) }{Pr \tilde{X}} =\tilde{x}_j}
         
         # POSTERIOR from WGC
         # posterior = mymodule.Posterior_WGC()
