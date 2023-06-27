@@ -83,7 +83,7 @@ with st.sidebar:
                 neg_upload_file = uploaded_file
                 dfN = pd.read_csv(neg_upload_file)
                 st.write('NEG File preview...')
-                st.write(df.head())
+                st.write(dfN.head())
             elif uploaded_file.name[0:3]=='POS':
                 pos_upload_file = uploaded_file
                 df = pd.read_csv(pos_upload_file)
@@ -171,9 +171,9 @@ if uploaded_file is not None:
         st.subheader('Posterior ~ :blue[Prior] * Likelhood')
         st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
         # st.markdown(":blue[$Pr(Y= y_i)$]")
-        st.latex(r''' {Pr(X} =x_j | \Theta = \theta_i ) = 
-        \frac{Pr(\Theta = \theta_i ) Pr(\Theta = \theta_i )| X=x_j)}{X=x_j}
-        ''')  #\approx  \frac{count_{ij}}{row\ sum } #\frac{Pr(\Theta = \theta_i ) }{Pr \tilde{X}} =\tilde{x}_j}
+        st.latex(r''' Pr( \Theta = \theta_i | X =x_j ) = 
+        \frac{Pr(\Theta = \theta_i ) Pr( X=x_j | \Theta = \theta_i )}{Pr (X=x_j)} 
+        ''')  
         
         # POSTERIOR from WGC
         # posterior = mymodule.Posterior_WGC()
@@ -203,3 +203,5 @@ if uploaded_file is not None:
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
         VII_input= mymodule.f_VIMPERFECT(post_input, value_array, Pr_Marg)
         st.subheader(r'''$V_{imperfect}$='''+str(VII_input))
+
+        

@@ -247,7 +247,7 @@ def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_s
 
     fig4 = plt.figure(figsize=(15,8))
     plt.plot(x_sample,np.exp(post_input[:,1]),'g--', label='$Pr(Positive|{})$ with Input Prior'.format(x_cur))
-    plt.plot(x_sample,np.exp(post_uniform[:,0]),'r--', label='$Pr(Negative|{})$ with Input Prior'.format(x_cur))
+    plt.plot(x_sample,np.exp(post_input[:,0]),'r--', label='$Pr(Negative|{})$ with Input Prior'.format(x_cur))
     plt.plot(x_sample,np.exp(post_uniform[:,1]),'k-', label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
     plt.xlabel(str(x_cur), fontsize=15)
     plt.ylim([0,1])
