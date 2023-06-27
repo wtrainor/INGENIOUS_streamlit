@@ -145,6 +145,7 @@ if uploaded_file is not None:
         dfpair = dfpair0[dfpair0[y_cur0]>-9999] 
         # # # OJO : may want to keep this off until have it for NEG 
         dfpairN = df_screenN#[(df_screenN['NegSite_Di'] <=round(NEG_distance_meters,-1))] 
+        
         st.subheader('Calculate & Display Likelihoods')
         st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
         mymodule.my_kdeplot(dfpair,x_cur,y_cur0,dfpairN)
@@ -170,7 +171,9 @@ if uploaded_file is not None:
 
         st.subheader('Posterior ~ :blue[Prior] * Likelhood')
         st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
-        # st.markdown(":blue[$Pr(Y= y_i)$]")
+        st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
+                     :blue['+r'''$Pr(\Theta = \theta_i )$'''+'] \
+                     :orange['+r'''$Pr( X=x_j | \Theta = \theta_i )$'''+']')
         st.latex(r''' Pr( \Theta = \theta_i | X =x_j ) = 
         \frac{Pr(\Theta = \theta_i ) Pr( X=x_j | \Theta = \theta_i )}{Pr (X=x_j)} 
         ''')  
