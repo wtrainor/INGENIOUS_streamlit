@@ -5,6 +5,8 @@ import time
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 import os
+import locale
+locale.setlocale( locale.LC_ALL, '' )
 
 import mymodule
 
@@ -192,19 +194,23 @@ if uploaded_file is not None:
         # This function can be called with multiple values of "dry hole"
         vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
         st.subheader('Should you enter the geothermal lottery?')
-        st.subheader('Vprior '+str(vprior_unif_out))
+        st.subheader(r'''$V_{prior}$ '''+str(locale.currency(vprior_unif_out, grouping=True )))
 
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
-        st.subheader(r'''$VOI_{perfect}$ ='''+str(VPI))
+        st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
 
         # Need a marginal estimate 
         # Calculate marg_input, marg_unif       
         # Passing unscale likelihood?
         Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg)
 
+        mymodule.Posterior_Marginal_plot(post_input, post_uniform, np.sum(Pr_Marg,0), x_cur, x_sampled)
 
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
-        VII_input= mymodule.f_VIMPERFECT(post_input, value_array, Pr_Marg)
-        st.subheader(r'''$V_{imperfect}$='''+str(VII_input))
+        VII_input, VII_unifMarginal= mymodule.f_VIMPERFECT(post_input, value_array, Pr_Marg, x_sampled)
+        
+        st.subheader(r'''$V_{imperfect}$='''+str(locale.currency(VII_input, grouping=True )))
+        st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
+     
 
         

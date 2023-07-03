@@ -162,7 +162,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0):
     ## RECALCULATE counts with smoothed Likelihood ????
         
        
-    return Likelihood_logprob_pos, Likelihood_logprob_neg, x_d, count_ij
+    return Likelihood_logprob_pos, Likelihood_logprob_neg, x_d, count_ij 
 
 # Not used right now #
 # def Prior_probability_continuous(x_sample, X_train, x_cur):
@@ -245,16 +245,32 @@ def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_s
     # st.write('post_input[:,0]',post_input[:,0])
     # st.write('post_input[:,1]',post_input[:,1])
 
-    fig4 = plt.figure(figsize=(15,8))
-    plt.plot(x_sample,np.exp(post_input[:,1]),'g--', label='$Pr(Positive|{})$ with Input Prior'.format(x_cur))
-    plt.plot(x_sample,np.exp(post_input[:,0]),'r--', label='$Pr(Negative|{})$ with Input Prior'.format(x_cur))
-    plt.plot(x_sample,np.exp(post_uniform[:,1]),'k-', label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
-    plt.xlabel(str(x_cur), fontsize=15)
+    return post_input, post_uniform
+
+def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):    
+    
+    fig4, axes = plt.subplots(figsize=(15,8),ncols=1,nrows=1)
+    plt.plot(x_sample,np.exp(post_input[:,1]),'g--', linewidth=4, label='$Pr(Positive|{})$ with Input Prior'.format(x_cur))
+    plt.plot(x_sample,np.exp(post_input[:,0]),'r--', linewidth=4,label='$Pr(Negative|{})$ with Input Prior'.format(x_cur))
+    plt.plot(x_sample,np.exp(post_uniform[:,1]),'k-', linewidth=4,label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
     plt.ylim([0,1])
-    plt.legend(fontsize=12) 
+    plt.legend(loc=2,fontsize=18,facecolor='w')#,draggable='True') 
+    plt.xlabel(str(x_cur), fontsize=20)
+    plt.ylabel('Posterior Probability', fontsize=20)
+    axes.tick_params(axis='x', which='both', labelsize=15)
+    axes.tick_params(axis='y', which='both', labelsize=15)
+
+    ax2 = axes.twinx()
+    ax2.plot(x_sample,marg,color='purple',linestyle='dashdot', label='Marginal $Pr(X=x_j)$',alpha=0.5)
+    ax2.fill_between(x_sample,marg, where=marg>=np.zeros(len(x_sample)), interpolate=True, color='purple',alpha=0.03)
+    ax2.tick_params(axis='x', which='both', labelsize=15)
+    ax2.tick_params(axis='y', which='both', colors='purple', labelsize=15)
+    ax2.set_ylabel('Marginal Probability', color='purple',fontsize=20)
+      
+    # plt.legend(loc=1,fontsize=18) 
     st.pyplot(fig4)
 
-    return post_input, post_uniform
+    return
 
 # def Posterior_by_hand(Pr_input_POS,Likelihood_logprob_pos, Likelihood_logprob_neg):
 
@@ -359,12 +375,11 @@ def marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg):
     # axes.plot(x_sampled,scale*np.exp(predictedLikelihood_neg),'.r')
     # axes.plot(x_sampled,marg_w*(marg_input_POS+marg_input_NEG),'*c')
     # st.pyplot(figT)
-    
     st.write('MARG SUM', np.sum(marg_w*(marg_input_POS+marg_input_NEG)))
 
     return marg_w*np.vstack((marg_input_NEG, marg_input_NEG))
 
-def f_VIMPERFECT(Prm_d,value_array,Pr_d,*args):
+def f_VIMPERFECT(Prm_d,value_array,Pr_d,x_sample,*args):
     """
     Function to calculate the highest decision action/alternative (a) given the 
     
@@ -408,4 +423,6 @@ def f_VIMPERFECT(Prm_d,value_array,Pr_d,*args):
 
     # VII:  Value WITH imperfect information
     VII = np.sum(Pr_d * v_aj_array)
-    return VII
+
+    VII_unifmarginal = np.sum(1.0/len(x_sample) * v_aj_array)
+    return VII, VII_unifmarginal
