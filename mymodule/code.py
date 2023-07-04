@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KernelDensity
 from sklearn.naive_bayes import GaussianNB
 import os
+import io
 
 
 def math_it_up(*args, **kwargs):
@@ -87,8 +88,8 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0):
     #  Original VOI code uses 2d array for likelihood:  models (row) were interpetted where (columns).
     #
     ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
-    kde_pos = KernelDensity(bandwidth=0.3, kernel='gaussian')
-    kde_neg = KernelDensity(bandwidth=0.3, kernel='gaussian')
+    kde_pos = KernelDensity(bandwidth=1, kernel='gaussian')
+    kde_neg = KernelDensity(bandwidth=1, kernel='gaussian')
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
@@ -269,6 +270,22 @@ def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
       
     # plt.legend(loc=1,fontsize=18) 
     st.pyplot(fig4)
+
+    title = st.text_input('Filename', 'StreamlitImageDefault_{}.png'.format(x_cur))
+    st.write('The current filename is', title)
+
+    # SavePosteriorFig = st.checkbox('Please check if you want to save this figure')
+    # if SavePosteriorFig:
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+        
+    btn = st.download_button(
+        label="Download image "+title,
+        data=img,
+        file_name=title,
+        mime="image/png"
+        )
+
 
     return
 
