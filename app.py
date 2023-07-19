@@ -17,7 +17,7 @@ import mymodule
 # 3 Log into streamlit, and app is there...
 
 # PRIORS - > USER INPUT
-st.header('When you enter the geothermal lottery without further information?')
+st.header('Should you enter the geothermal lottery without further information?')
 st.subheader('What\'s the Prior Probability $Pr(.)$ of a POSITIVE geothermal site?')
 Pr_prior_POS_demo = mymodule.Prior_probability_binary() #np.linspace(0.05,1,20) 
 
@@ -203,7 +203,8 @@ if uploaded_file is not None:
         # Calculate marg_input, marg_unif       
         # Passing unscale likelihood?
         Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg)
-
+        # st.write(np.shape(Pr_Marg),Pr_Marg[0,-20:],Pr_Marg[1,-20:])
+        
         mymodule.Posterior_Marginal_plot(post_input, post_uniform, np.sum(Pr_Marg,0), x_cur, x_sampled)
 
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
