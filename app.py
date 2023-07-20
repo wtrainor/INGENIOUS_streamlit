@@ -160,8 +160,10 @@ if uploaded_file is not None:
         # split up if we want to test bandwidth 
         X_train, X_test, y_train, y_test = mymodule.make_train_test(dfpair,x_cur,y_cur0,dfpairN)
  
+        best_params = mymodule.optimal_bin(X_train, y_train)
+
         # Likelihood via KDE estimate
-        predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0)
+        predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_params)
 
       
         #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences

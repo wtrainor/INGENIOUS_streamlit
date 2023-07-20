@@ -11,6 +11,44 @@ from sklearn.naive_bayes import GaussianNB
 import os
 import io
 
+from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.model_selection import GridSearchCV
+
+
+
+class KDEClassifier(BaseEstimator, ClassifierMixin):
+    """Bayesian generative classification based on KDE
+
+    Parameters
+    ----------
+    bandwidth : float
+        the kernel bandwidth within each class
+    kernel : str
+        the kernel name, passed to KernelDensity
+    """
+    def __init__(self, bandwidth=1.0, kernel='gaussian'):
+        self.bandwidth = bandwidth
+        self.kernel = kernel
+
+    def fit(self, X, y):
+        self.classes_ = np.sort(np.unique(y))
+        training_sets = [X[y == yi] for yi in self.classes_]
+        self.models_ = [KernelDensity(bandwidth=self.bandwidth,
+                                      kernel=self.kernel).fit(Xi)
+                        for Xi in training_sets]
+        self.logpriors_ = [np.log(Xi.shape[0] / X.shape[0])
+                           for Xi in training_sets]
+        return self
+
+    def predict_proba(self, X):
+        logprobs = np.array([model.score_samples(X)
+                             for model in self.models_]).T
+        result = np.exp(logprobs + self.logpriors_)
+        return result / result.sum(1, keepdims=True)
+
+    def predict(self, X):
+        return self.classes_[np.argmax(self.predict_proba(X), 1)]
+    
 
 def math_it_up(*args, **kwargs):
     return np.log(*args, **kwargs)
@@ -80,16 +118,29 @@ def make_train_test(dfpair,x_cur,y_cur0,dfpairN):
     
     X_train, X_test, y_train, y_test = train_test_split(X_all, y_all, test_size=0.33, random_state=42)
     
-    return  X_train, X_test, y_train, y_test  
+    return  X_train, X_test, y_train, y_test 
 
+def optimal_bin(X_train, y_train):
+    
+    x_d = np.linspace(min(X_train), max(X_train), 100)
+    
+    maxValue = x_d[-1]
+    bandwidths = np.linspace(0, maxValue, 20)
+    grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths})
+    grid.fit(X_train[:,np.newaxis], y_train)
+    scores = grid.cv_results_['mean_test_score']
+    print(grid.best_params_)
+    print('accuracy =', grid.best_score_)
 
-def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0):
+    return grid.best_params_
+
+def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters):
     #
     #  Original VOI code uses 2d array for likelihood:  models (row) were interpetted where (columns).
     #
     ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
-    kde_pos = KernelDensity(bandwidth=1, kernel='gaussian')
-    kde_neg = KernelDensity(bandwidth=1, kernel='gaussian')
+    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian') ##want to put function from above into bandwidth=
+    kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
