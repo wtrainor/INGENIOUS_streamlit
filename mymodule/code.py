@@ -139,8 +139,8 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     #  Original VOI code uses 2d array for likelihood:  models (row) were interpetted where (columns).
     #
     ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
-    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian') ##want to put function from above into bandwidth=
-    kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
+    kde_pos = KernelDensity(bandwidth=1, kernel='gaussian')
+    kde_neg = KernelDensity(bandwidth=1, kernel='gaussian')
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
