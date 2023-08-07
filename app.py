@@ -137,8 +137,7 @@ if uploaded_file is not None:
         st.write('dataframe is shape: {thesize}'.format(thesize=df_screen.shape))
         st.write('attribute stats ', df_screen[attribute0].describe())
 
-        distance_meters = st.slider('Change likelihood by *screening* distance to positive label [km or meters??]', 
-            10, int(np.max(df_screen['PosSite_Di'])-10), 800, step=100) # min, max, default
+        distance_meters = st.slider('Change likelihood by *screening* distance to positive label [km or meters??]',10, int(np.max(df_screen['PosSite_Di'])-10), 800, step=100) # min, max, default
         # NEG_distance_meters = st.slider('Change likelihood by *screening* distance to negative label [km or meters??]', 
         #     10, int(np.max(df_screenN['NegSite_Di'])-10), int(np.median(df_screenN['NegSite_Di'])), step=1000)
 
