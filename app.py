@@ -129,7 +129,7 @@ if uploaded_file is not None:
     
         screen_att0 ='PosSite_Di'
         screen_att1 ='NegSite_Di'
-        y_cur0 = 'GeodeticSt'  # hard code for now will come from multiselect
+        y_cur0 = 'GeodeticStrainRate'  # hard code for now will come from multiselect
         # xmax_cur
 
         df_screen = df[df[x_cur]>-9999]
@@ -143,6 +143,7 @@ if uploaded_file is not None:
 
         # round to make sure it rounds to nearest 10
         dfpair0 = df_screen[(df_screen['PosSite_Distance'] <=round(distance_meters,-1))] 
+        print('dfpair0.head(10)', dfpair0.head(10))
         dfpair = dfpair0[dfpair0[y_cur0]>-9999] 
         # # # OJO : may want to keep this off until have it for NEG 
         dfpairN = df_screenN#[(df_screenN['NegSite_Di'] <=round(NEG_distance_meters,-1))] 
