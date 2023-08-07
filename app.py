@@ -137,12 +137,12 @@ if uploaded_file is not None:
         st.write('dataframe is shape: {thesize}'.format(thesize=df_screen.shape))
         st.write('attribute stats ', df_screen[attribute0].describe())
 
-        distance_meters = st.slider('Change likelihood by *screening* distance to positive label [km or meters??]',10, int(np.max(df_screen['PosSite_Di'])-10), 800, step=100) # min, max, default
+        distance_meters = st.slider('Change likelihood by *screening* distance to positive label [km or meters??]',10, int(np.max(df_screen['PosSite_Distance'])-10), 800, step=100) # min, max, default
         # NEG_distance_meters = st.slider('Change likelihood by *screening* distance to negative label [km or meters??]', 
         #     10, int(np.max(df_screenN['NegSite_Di'])-10), int(np.median(df_screenN['NegSite_Di'])), step=1000)
 
         # round to make sure it rounds to nearest 10
-        dfpair0 = df_screen[(df_screen['PosSite_Di'] <=round(distance_meters,-1))] 
+        dfpair0 = df_screen[(df_screen['PosSite_Distance'] <=round(distance_meters,-1))] 
         dfpair = dfpair0[dfpair0[y_cur0]>-9999] 
         # # # OJO : may want to keep this off until have it for NEG 
         dfpairN = df_screenN#[(df_screenN['NegSite_Di'] <=round(NEG_distance_meters,-1))] 
