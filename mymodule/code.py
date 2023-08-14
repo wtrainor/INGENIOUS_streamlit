@@ -133,6 +133,7 @@ def optimal_bin(X_train, y_train):
     st.write('streamlit version',st.__version__)
     st.write('numpy version',np.__version__)
     st.write('matplotlib version',sns.__version__)
+    import sklearn
     st.write('scikit',sklearn.show_versions()) # sklearn.__version__)
     grid.fit(X_train[:,None],y_train) # removed  ,  .to_numpy() doesn't work np.reshape(,(-1,1)), y_train
     scores = grid.cv_results_['mean_test_score']
