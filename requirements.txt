@@ -1,5 +1,5 @@
 seaborn
-pandas
+pandas==1.5.1
 streamlit
 numpy
 matplotlib
