@@ -127,7 +127,13 @@ def optimal_bin(X_train, y_train):
     maxValue = x_d[-1]
     bandwidths = np.linspace(0, maxValue, 20)
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths})
-    st.write('X_train',np.shape(X_train),np.__version__,sns.__version__)
+    st.write('X_train',np.shape(X_train))
+    st.write('seaborn version',sns.__version__)
+    st.write('pandas version',pd.__version__)
+    st.write('streamlit version',st.__version__)
+    st.write('numpy version',np.__version__)
+    st.write('matplotlib version',sns.__version__)
+    st.write('scikit,',sklearn.__version__)
     grid.fit(X_train[:,None],y_train) # removed  ,  .to_numpy() doesn't work np.reshape(,(-1,1)), y_train
     scores = grid.cv_results_['mean_test_score']
     print(grid.best_params_)
