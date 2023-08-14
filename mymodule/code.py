@@ -127,7 +127,7 @@ def optimal_bin(X_train, y_train):
     maxValue = x_d[-1]
     bandwidths = np.linspace(0, maxValue, 20)
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths})
-    grid.fit(X_train[:,np.newaxis], y_train)
+    grid.fit(X_train[:,None], y_train)
     scores = grid.cv_results_['mean_test_score']
     print(grid.best_params_)
     print('accuracy =', grid.best_score_)
