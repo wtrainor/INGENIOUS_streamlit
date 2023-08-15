@@ -62,7 +62,7 @@ def normpdf(x, mean, sd):
 
 def st_file_selector(st_placeholder, path='.', label='Please, select a file/folder...'):
     # get base path (directory)
-    base_path = '.' if path is None or path is '' else path
+    base_path = '.' if path == None or path is '' else path
     base_path = base_path if os.path.isdir(
         base_path) else os.path.dirname(base_path)
     base_path = '.' if base_path is None or base_path is '' else base_path
@@ -135,7 +135,9 @@ def optimal_bin(X_train, y_train):
     st.write('matplotlib version',sns.__version__)
     import sklearn
     st.write('scikit',sklearn.show_versions()) # sklearn.__version__)
-    grid.fit(X_train[:,None],y_train) # removed  ,  .to_numpy() doesn't work np.reshape(,(-1,1)), y_train
+    X_train_np = X_train.values
+    st.write(X_train.iloc[0:5], X_train_np[0:3])
+    grid.fit(X_train_np[:,None],y_train) # removed  [:,None],  .to_numpy() doesn't work np.reshape(,(-1,1)), y_train
     scores = grid.cv_results_['mean_test_score']
     print(grid.best_params_)
     print('accuracy =', grid.best_score_)
