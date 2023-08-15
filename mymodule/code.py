@@ -162,8 +162,10 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     forkde_neg = X_train[y_train==0]#.iloc[:,x_cur]
 
     # two_d = X_train #.iloc[:,x_cur] #cur_feat
-    kde_pos.fit(forkde_pos[:,np.newaxis])
-    kde_neg.fit(forkde_neg[:,np.newaxis])
+    forkde_pos_np = forkde_pos.values
+    forkde_neg_np = forkde_neg.values
+    kde_pos.fit(forkde_pos_np[:,np.newaxis])
+    kde_neg.fit(forkde_neg_np[:,np.newaxis])
     
     x_d = np.linspace(min(X_train), max(X_train), 100) 
     Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis])
@@ -297,10 +299,10 @@ def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_s
     # # # # # # 
     model_NVML_input = GaussianNB(priors=[1-Pr_input_POS,Pr_input_POS,])
     st.write('np.shape(X_train)',np.shape(X_train))
-    model_NVML_input.fit(X_train[:,np.newaxis], y_train[:,np.newaxis]);
+    model_NVML_input.fit(X_train.values[:,np.newaxis], y_train[:,np.newaxis]);
 
     model_NVML_uniform = GaussianNB(priors=[0.5,0.5])
-    model_NVML_uniform.fit(X_train[:,np.newaxis], y_train[:,np.newaxis]);
+    model_NVML_uniform.fit(X_train.values[:,np.newaxis], y_train[:,np.newaxis]);
 
     post_input = model_NVML_input.predict_log_proba(x_sample[:,np.newaxis])# X_test[:,np.newaxis])
     post_uniform = model_NVML_uniform.predict_log_proba(x_sample[:,np.newaxis])# X_test[:,np.newaxis])
