@@ -196,8 +196,9 @@ if uploaded_file is not None:
         # This function can be called with multiple values of "dry hole"
         vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
         st.subheader('Should you enter the geothermal lottery?')
-        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8') #'en_US') #locale.setlocale(locale.LC_ALL, 
-        st.subheader(r'''$V_{prior}$ '''+str(locale.currency(vprior_unif_out, grouping=True )))
+        locale.setlocale(locale.LC_ALL, '') 
+        # locale.setlocale(locale.LC_ALL, 'en_US.UTF-8') #'en_US') #locale.setlocale(locale.LC_ALL, 
+        st.subheader(r'''$V_{prior}$ '''+str(locale.currency(vprior_unif_out, grouping=True, symbol=True )))
 
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
         st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
