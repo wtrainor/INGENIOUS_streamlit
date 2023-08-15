@@ -197,7 +197,7 @@ if uploaded_file is not None:
         vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
         st.subheader('Should you enter the geothermal lottery?')
         #locale.setlocale(locale.LC_ALL, '') 
-        locale.setlocale( locale.LC_ALL, 'en_CA.UTF-8') #'en_US') #locale.setlocale(locale.LC_ALL, en_US.UTF-8
+        locale.setlocale( locale.LC_ALL, 'en_CA.UTF-8') # US to CA 'en_US') #locale.setlocale(locale.LC_ALL, en_US.UTF-8
         st.subheader(r'''$V_{prior}$ '''+str(locale.currency(vprior_unif_out, grouping=True, symbol=True )))
 
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
