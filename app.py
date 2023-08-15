@@ -5,8 +5,10 @@ import time
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 import os
-import locale
-locale.setlocale( locale.LC_ALL, '' )
+# import babel.numbers
+# import decimal
+#import locale
+#locale.setlocale( locale.LC_ALL, '' )
 
 import mymodule
 
@@ -196,12 +198,14 @@ if uploaded_file is not None:
         # This function can be called with multiple values of "dry hole"
         vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
         st.subheader('Should you enter the geothermal lottery?')
-        #locale.setlocale(locale.LC_ALL, '') 
-        locale.setlocale( locale.LC_ALL, 'en_CA.UTF-8') # US to CA 'en_US') #locale.setlocale(locale.LC_ALL, en_US.UTF-8
-        st.subheader(r'''$V_{prior}$ '''+str(locale.currency(vprior_unif_out, grouping=True, symbol=True )))
+        # locale.setlocale( locale.LC_ALL, 'en_CA.UTF-8') # US to CA 'en_US') #locale.setlocale(locale.LC_ALL, en_US.UTF-8
+        
+        # st.subheader(r'''$V_{prior}$ '''+str(locale.currency(vprior_unif_out, grouping=True, symbol=True )))
+        st.subheader(r'''$V_{prior}$ '''+'${:0,.0f}'.format(vprior_unif_out).replace('$-','-$'))
 
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
-        st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
+        # st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
+        st.subheader(r'''$VOI_{perfect}$ ='''+'${:0,.0f}'.format(VPI).replace('$-','-$'))
 
         # Need a marginal estimate 
         # Calculate marg_input, marg_unif       
@@ -214,8 +218,9 @@ if uploaded_file is not None:
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
         VII_input, VII_unifMarginal= mymodule.f_VIMPERFECT(post_input, value_array, Pr_Marg, x_sampled)
         
-        st.subheader(r'''$V_{imperfect}$='''+str(locale.currency(VII_input, grouping=True )))
-        st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
-     
+        # st.subheader(r'''$V_{imperfect}$='''+str(locale.currency(VII_input, grouping=True )))
+        st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
+        # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
+        st.write('with uniform marginal', '${:0,.0f}'.format(VII_unifMarginal).replace('$-','-$'))
 
         
