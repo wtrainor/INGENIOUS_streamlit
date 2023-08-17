@@ -192,7 +192,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     #.iloc[:,feat4]
     n_out = axes[1].hist([X_test[y_test>0],X_test[y_test==0]], color=['g','r'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
     st.pyplot(fig2)
-    st.write('WIDTH of BARS: rwidth=(X_test.max() - X_test.min())',rwidth=(X_test.max() - X_test.min()))    
+    #st.write('WIDTH of BARS: rwidth=(X_test.max() - X_test.min())',rwidth=(X_test.max() - X_test.min()))    
       
     ### COUNT ARRAY FIGURE # # # # #  #
     pos_counts = n_out[0][0] 
@@ -458,7 +458,7 @@ def marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg):
     # axes.plot(x_sampled,scale*np.exp(predictedLikelihood_neg),'.r')
     # axes.plot(x_sampled,marg_w*(marg_input_POS+marg_input_NEG),'*c')
     # st.pyplot(figT)
-    st.write('MARG SUM', np.sum(marg_w*(marg_input_POS+marg_input_NEG)))
+    #st.write('MARG SUM', np.sum(marg_w*(marg_input_POS+marg_input_NEG)))
 
     return marg_w*np.vstack((marg_input_NEG, marg_input_NEG))
 
