@@ -184,11 +184,11 @@ if uploaded_files is not None:
         #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
         #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
 
-        st.subheader('Posterior ~ :blue[Prior] x :orange[Likelhood]')
+        st.header(':point_down: :violet[Posterior]~:blue[Prior] x Likelhood :point_up_2:')
         #st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
         st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
-                     :blue['+r'''$Pr(\Theta = \theta_i )$'''+'] \
-                     :orange['+r'''$Pr( X=x_j | \Theta = \theta_i )$'''+']')
+                     :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] \
+                     '+r'''$Pr( X=x_j | \Theta = \theta_i )$''')
           
         st.write(':blue['+r'''$Pr(\Theta = \theta_i)$'''+'] in posterior')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
