@@ -279,7 +279,7 @@ def Prior_probability_binary(mykey=None): #x_sample, X_train,
     # X_locations = x_sample 
     # X_unif_prior = np.ones(len(X_locations)) /len(X_locations)
     
-    Pr_POS = st.slider('Choose prior probability of success (odds in the geothermal lottery)', float(0.00),float(1.0), float(0.1), float(0.01),key=mykey)
+    Pr_POS = st.slider('Choose :blue[prior probability of success (odds in the geothermal lottery)]', float(0.00),float(1.0), float(0.1), float(0.01),key=mykey)
 
     return Pr_POS 
 
@@ -322,16 +322,16 @@ def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
     plt.ylim([0,1])
     plt.legend(loc=2,fontsize=18,facecolor='w')#,draggable='True') 
     plt.xlabel(str(x_cur), fontsize=20)
-    plt.ylabel('Posterior Probability', fontsize=20)
+    plt.ylabel('Posterior Probability', fontsize=20, color='purple')
     axes.tick_params(axis='x', which='both', labelsize=15)
-    axes.tick_params(axis='y', which='both', labelsize=15)
+    axes.tick_params(axis='y', which='both', labelsize=15, colors='purple')
 
     ax2 = axes.twinx()
     ax2.plot(x_sample,marg,color='purple',linestyle='dashdot', label='Marginal $Pr(X=x_j)$',alpha=0.5)
-    ax2.fill_between(x_sample,marg, where=marg>=np.zeros(len(x_sample)), interpolate=True, color='purple',alpha=0.03)
+    ax2.fill_between(x_sample,marg, where=marg>=np.zeros(len(x_sample)), interpolate=True, color='orange',alpha=0.03)
     ax2.tick_params(axis='x', which='both', labelsize=15)
-    ax2.tick_params(axis='y', which='both', colors='purple', labelsize=15)
-    ax2.set_ylabel('Marginal Probability', color='purple',fontsize=20)
+    ax2.tick_params(axis='y', which='both', colors='orange', labelsize=15)
+    ax2.set_ylabel('Marginal Probability', color='orange',fontsize=20)
       
     # plt.legend(loc=1,fontsize=18) 
     st.pyplot(fig4)
@@ -388,8 +388,8 @@ def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
 
     index_labels = ['do nothing','drill']
     value_array_df = pd.DataFrame(value_array,index=index_labels,columns=['negative','positive'])
-    st.write('value_array_df',value_array_df)
-    return value_array
+    
+    return value_array, value_array_df
 
 def f_VPRIOR(PriorWeight, value_array_mod, *args):  
 
