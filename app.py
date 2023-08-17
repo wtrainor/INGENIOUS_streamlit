@@ -27,7 +27,7 @@ Pr_prior_POS_demo = mymodule.Prior_probability_binary() #np.linspace(0.05,1,20)
 #### start of paste  -> CHANGE to input
 count_ij = np.zeros((2,10))
 value_array = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
-#st.write('value_array', value_array)
+# # st.write('value_array', value_array)
 
 ## Calculate Vprior
 #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
@@ -52,13 +52,12 @@ plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$
 plt.ylabel('$V_{prior}$',fontsize=14)
 plt.xlabel('Dryhole Cost')
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
-st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE))
-ax.text(np.min(value_drill_DRYHOLE), np.mean(vprior_INPUT_demo_list), "v_a=Drill(x=Positive) = +$1M ", size=12, #\n Don't Drill \t 
-        color='green',
+#st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
+ax.text(np.min(value_drill_DRYHOLE), value_array[-1,-1]*0.5, r'$v_{a=Drill}(x=Positive) =$'+'\${:0,.0f}'.format(value_array[-1,-1]), 
+        size=12, color='green',
          #va="baseline", ha="left", multialignment="left",
           horizontalalignment='left',
-         verticalalignment='top',
-         bbox=dict(fc="none"))
+         verticalalignment='top')#, bbox=dict(fc="none"))
 
 if showVperfect:  
     VPIlist = list(map(lambda uu: mymodule.Vperfect(Pr_prior_POS_demo, value_array,uu),value_drill_DRYHOLE))
@@ -67,8 +66,10 @@ if showVperfect:
     # VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
     ax.plot(value_drill_DRYHOLE,VPIlist,'b', label='$V_{perfect}$')
     ax.plot(value_drill_DRYHOLE,VOIperfect,'b--', label='$VOI_{perfect}$')
-plt.legend(loc=3)
-plt.ylim([vprior_INPUT_min,(VPI_max+20)]) #-vprior_INPUT_min
+
+plt.legend(loc=1)
+plt.ylim([vprior_INPUT_min,value_array[-1,-1]*0.8]) # YLIM was (VPI_max+20)
+
 # additional code before plt.show()
 formatter = ticker.ScalarFormatter()
 formatter.set_scientific(False)
@@ -125,7 +126,7 @@ with st.sidebar:
 
 
 # uploaded_fileNEG = st.file_uploader("Choose a NEG file",type=['csv'])
-st.write('uploaded_files==None', uploaded_files==None)
+st.write('uploaded_files==None attribute0==None', uploaded_files==None)
 if uploaded_files is not None:
     st.title('Domain Likelihoods: thresholding distances to labels')
     # df = pd.read_csv(uploaded_file)
