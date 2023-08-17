@@ -26,7 +26,7 @@ Pr_prior_POS_demo = mymodule.Prior_probability_binary() #np.linspace(0.05,1,20)
 
 #### start of paste  -> CHANGE to input
 count_ij = np.zeros((2,10))
-value_array = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
+value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
 # # st.write('value_array', value_array)
 
 ## Calculate Vprior
@@ -41,9 +41,8 @@ VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE
 # l2 = list(map(lambda v: v ** 2, l1))
 vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
                                                               value_array,vv),value_drill_DRYHOLE))
-st.subheader('Yes if $V_{prior}$ is positive. $Pr(X=Positive)$='+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
-st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(X = x_i)  v_a(x_i) \ \  \forall a $''')
-
+st.subheader('Yes if $V_{prior}$ is positive. $Pr(\Theta=Positive)$='+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
+st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
 
 showVperfect = st.checkbox('Show Vperfect')
 
@@ -83,7 +82,7 @@ st.pyplot(firstfig)
 if showVperfect:  
     st.write(r'''$VOI_{perfect} = V_{perfect}-V_{prior}=$'''+str(VPIlist[0])+' - '+str(vprior_INPUT_demo_list[0]))
     st.write('Since you "know" when either subsurface condition occurs, you can pick the best ($\max\limits_a$) drilling altervative first ($v_a$).')
-    st.write(r'''$V_{perfect} =  \Sigma_{i=1}^2 Pr(X = x_i) \max\limits_a v_a(x_i) \ \  \forall a $''')
+    st.write(r'''$V_{perfect} =  \Sigma_{i=1}^2 Pr(\Theta = \theta_i) \max\limits_a v_a(\theta_i) \ \  \forall a $''')
 
 
 with st.sidebar:
@@ -185,24 +184,20 @@ if uploaded_files is not None:
         #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
         #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
 
-        st.subheader('Change the Prior :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] of POSITIVE Geothermal site')
-        Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
-
-        st.subheader('Posterior ~ :blue[Prior] * Likelhood')
-        st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
+        st.subheader('Posterior ~ :blue[Prior] x :orange[Likelhood]')
+        #st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
         st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
                      :blue['+r'''$Pr(\Theta = \theta_i )$'''+'] \
                      :orange['+r'''$Pr( X=x_j | \Theta = \theta_i )$'''+']')
-        st.latex(r''' Pr( \Theta = \theta_i | X =x_j ) = 
-        \frac{Pr(\Theta = \theta_i ) Pr( X=x_j | \Theta = \theta_i )}{Pr (X=x_j)} 
-        ''')  
-        
+          
+        st.write(':blue['+r'''$Pr(\Theta = \theta_i)$'''+'] in posterior')
+        Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
         # POSTERIOR from WGC
         # posterior = mymodule.Posterior_WGC()
         # POSTERIOR via_Naive_Bayes: Draw back here is ??? can I get the marginal out? 
         post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
 
-        value_array = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
+        value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
         #st.write('value_array', value_array)
 
         #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
@@ -211,14 +206,13 @@ if uploaded_files is not None:
         # This function can be called with multiple values of "dry hole"
         vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
         st.subheader('Should you enter the geothermal lottery?')
-        # locale.setlocale( locale.LC_ALL, 'en_CA.UTF-8') # US to CA 'en_US') #locale.setlocale(locale.LC_ALL, en_US.UTF-8
-        
-        # st.subheader(r'''$V_{prior}$ '''+str(locale.currency(vprior_unif_out, grouping=True, symbol=True )))
-        st.subheader(r'''$V_{prior}$ '''+'${:0,.0f}'.format(vprior_unif_out).replace('$-','-$'))
+               
+        #st.subheader(r'''$V_{prior}$ '''+'${:0,.0f}'.format(vprior_unif_out).replace('$-','-$'))
 
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
         # st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
-        st.subheader(r'''$VOI_{perfect}$ ='''+'${:0,.0f}'.format(VPI).replace('$-','-$'))
+        st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
+        st.write('Using these $v_a(\Theta)$',value_array_df)
 
         # Need a marginal estimate 
         # Calculate marg_input, marg_unif       
@@ -231,7 +225,10 @@ if uploaded_files is not None:
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
         VII_input, VII_unifMarginal= mymodule.f_VIMPERFECT(post_input, value_array, Pr_Marg, x_sampled)
         
-        # st.subheader(r'''$V_{imperfect}$='''+str(locale.currency(VII_input, grouping=True )))
+        st.latex(r''' Pr( \Theta = \theta_i | X =x_j ) = 
+            \frac{Pr(\Theta = \theta_i ) Pr( X=x_j | \Theta = \theta_i )}{Pr (X=x_j)} 
+            ''')
+
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
         st.write('with uniform marginal', '${:0,.0f}'.format(VII_unifMarginal).replace('$-','-$'))
