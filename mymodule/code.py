@@ -137,7 +137,7 @@ def optimal_bin(X_train, y_train):
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths})
 
     X_train_np = X_train.values
-    st.write(X_train.iloc[0:5], X_train_np[0:3])
+    #st.write(X_train.iloc[0:5], X_train_np[0:3])
     grid.fit(X_train_np[:,None],y_train) # removed  [:,None],  .to_numpy() doesn't work np.reshape(,(-1,1)), y_train
     scores = grid.cv_results_['mean_test_score']
     #st.write(grid.best_params_)
@@ -275,11 +275,11 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
 #     return X_unif_prior, X_wideNorm_prior, X_narNorm_prior
 
 def Prior_probability_binary(mykey=None): #x_sample, X_train,
-    st.write('Define your Binary Prior Probability (odds in the geothermal lottery)')  # right now could be used to redefine marginal??
+    
     # X_locations = x_sample 
     # X_unif_prior = np.ones(len(X_locations)) /len(X_locations)
     
-    Pr_POS = st.slider('Choose probability of success (prior)', float(0.00),float(1.0), float(0.1), float(0.01),key=mykey)
+    Pr_POS = st.slider('Choose prior probability of success (odds in the geothermal lottery)', float(0.00),float(1.0), float(0.1), float(0.01),key=mykey)
 
     return Pr_POS 
 
@@ -386,8 +386,9 @@ def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
     value_array[0,:] = [0, 0]
     value_array[1,:] = [cost_drill_neg, profit_drill_pos] 
 
-    value_array_df = pd.DataFrame(value_array,index={0:'nothing',1:'drill'},columns=['neg','pos'])
-    # st.write('value_array_df',value_array_df,value_array)
+    index_labels = ['do nothing','drill']
+    value_array_df = pd.DataFrame(value_array,index=index_labels,columns=['negative','positive'])
+    st.write('value_array_df',value_array_df)
     return value_array
 
 def f_VPRIOR(PriorWeight, value_array_mod, *args):  
