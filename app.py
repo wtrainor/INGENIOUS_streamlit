@@ -186,9 +186,9 @@ if uploaded_files is not None:
 
         st.header(':point_down: :violet[Posterior]~:blue[Prior] x Likelhood :point_up_2:')
         #st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
-        st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
-                     :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] \
-                     '+r'''$Pr( X=x_j | \Theta = \theta_i )$''')
+        #st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
+        #             :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] \
+        #             '+r'''$Pr( X=x_j | \Theta = \theta_i )$''')
           
         st.write(':blue['+r'''$Pr(\Theta = \theta_i)$'''+'] in posterior')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
@@ -224,8 +224,8 @@ if uploaded_files is not None:
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
         VII_input, VII_unifMarginal= mymodule.f_VIMPERFECT(post_input, value_array, Pr_Marg, x_sampled)
         
-        st.latex(r''' Pr( \Theta = \theta_i | X =x_j ) = 
-            \frac{Pr(\Theta = \theta_i ) Pr( X=x_j | \Theta = \theta_i )}{Pr (X=x_j)} 
+        st.latex(r'''\color{purple} Pr( \Theta = \theta_i | X =x_j ) = \color{blue}
+            \frac{Pr(\Theta = \theta_i ) \color{black} Pr( X=x_j | \Theta = \theta_i )}{\color{orange} Pr (X=x_j)} 
             ''')
         
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
