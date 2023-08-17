@@ -300,7 +300,7 @@ def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_s
     #   
     # # # # # # 
     model_NVML_input = GaussianNB(priors=[1-Pr_input_POS,Pr_input_POS,])
-    st.write('np.shape(X_train)',np.shape(X_train))
+    #st.write('np.shape(X_train)',np.shape(X_train))
     model_NVML_input.fit(X_train.values[:,np.newaxis], y_train[:,np.newaxis]);
 
     model_NVML_uniform = GaussianNB(priors=[0.5,0.5])
@@ -327,7 +327,7 @@ def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
     axes.tick_params(axis='y', which='both', labelsize=15, colors='purple')
 
     ax2 = axes.twinx()
-    ax2.plot(x_sample,marg,color='purple',linestyle='dashdot', label='Marginal $Pr(X=x_j)$',alpha=0.5)
+    ax2.plot(x_sample,marg,color='orange',linestyle='dashdot', label='Marginal $Pr(X=x_j)$',alpha=0.7)
     ax2.fill_between(x_sample,marg, where=marg>=np.zeros(len(x_sample)), interpolate=True, color='orange',alpha=0.03)
     ax2.tick_params(axis='x', which='both', labelsize=15)
     ax2.tick_params(axis='y', which='both', colors='orange', labelsize=15)
