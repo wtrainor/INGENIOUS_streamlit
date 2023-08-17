@@ -5,6 +5,7 @@ import time
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 import os
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 # import babel.numbers
 # import decimal
 #import locale
@@ -20,7 +21,7 @@ import mymodule
 
 # PRIORS - > USER INPUT
 st.header('Should you enter the geothermal lottery without further information?')
-st.subheader('What\'s the Prior Probability $Pr(.)$ of a POSITIVE geothermal site?')
+st.write('What\'s the Prior Probability $Pr(.)$ of a POSITIVE geothermal site?')
 Pr_prior_POS_demo = mymodule.Prior_probability_binary() #np.linspace(0.05,1,20) 
 
 #### start of paste  -> CHANGE to input
@@ -50,13 +51,22 @@ firstfig, ax = plt.subplots()
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel('$V_{prior}$',fontsize=14)
 plt.xlabel('Dryhole Cost')
+# axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
+st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE))
+ax.text(np.min(value_drill_DRYHOLE), np.mean(vprior_INPUT_demo_list), "v_a=Drill(x=Positive) = +$1M ", size=12, #\n Don't Drill \t 
+        color='green',
+         #va="baseline", ha="left", multialignment="left",
+          horizontalalignment='left',
+         verticalalignment='top',
+         bbox=dict(fc="none"))
+
 if showVperfect:  
     VPIlist = list(map(lambda uu: mymodule.Vperfect(Pr_prior_POS_demo, value_array,uu),value_drill_DRYHOLE))
     # st.write('VPI',np.array(VPIlist),vprior_INPUT_demo_list)
     VOIperfect = np.maximum((np.array(VPIlist)-np.array(vprior_INPUT_demo_list)),np.zeros(len(vprior_INPUT_demo_list)))
     # VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
-    plt.plot(value_drill_DRYHOLE,VPIlist,'b', label='$V_{perfect}$')
-    plt.plot(value_drill_DRYHOLE,VOIperfect,'b--', label='$VOI_{perfect}$')
+    ax.plot(value_drill_DRYHOLE,VPIlist,'b', label='$V_{perfect}$')
+    ax.plot(value_drill_DRYHOLE,VOIperfect,'b--', label='$VOI_{perfect}$')
 plt.legend(loc=3)
 plt.ylim([vprior_INPUT_min,(VPI_max+20)]) #-vprior_INPUT_min
 # additional code before plt.show()
@@ -68,7 +78,7 @@ ax.xaxis.set_major_formatter('${x:1.0f}')
 st.pyplot(firstfig)
 
 if showVperfect:  
-    st.write(r'''$VOI_{perfect}$ = V_{perfect}-V_{prior}='''+str(VPIlist[0])+' - '+str(vprior_INPUT_demo_list[0]))
+    st.write(r'''$VOI_{perfect} = V_{perfect}-V_{prior}=$'''+str(VPIlist[0])+' - '+str(vprior_INPUT_demo_list[0]))
     st.write('Since you "know" when either subsurface condition occurs, you can pick the best ($\max\limits_a$) drilling altervative first ($v_a$).')
     st.write(r'''$V_{perfect} =  \Sigma_{i=1}^2 Pr(X = x_i) \max\limits_a v_a(x_i) \ \  \forall a $''')
 
@@ -110,12 +120,14 @@ with st.sidebar:
     #with st.spinner("Loading..."):
     #    time.sleep(5)
     #st.success("Done!")
+    else:
+        st.write('please upload file')
 
-st.title('Domain Likelihoods: thresholding distances to labels')
 
 # uploaded_fileNEG = st.file_uploader("Choose a NEG file",type=['csv'])
-
-if uploaded_file is not None:
+st.write('uploaded_files==None', uploaded_files==None)
+if uploaded_files is not None:
+    st.title('Domain Likelihoods: thresholding distances to labels')
     # df = pd.read_csv(uploaded_file)
     # dfN = pd.read_csv(file_path+neg_upload_file)
     # st.subheader('ML Nevada Data')
@@ -222,5 +234,8 @@ if uploaded_file is not None:
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
         st.write('with uniform marginal', '${:0,.0f}'.format(VII_unifMarginal).replace('$-','-$'))
-
+    else: 
+        st.write("Please upload data files on left")
+else:
+    st.write("Please upload any data.")
         
