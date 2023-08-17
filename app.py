@@ -205,15 +205,14 @@ if uploaded_files is not None:
 
         # This function can be called with multiple values of "dry hole"
         vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
-        st.subheader('Should you enter the geothermal lottery?')
+        st.subheader('How much is this imperfect data worth?')
                
         #st.subheader(r'''$V_{prior}$ '''+'${:0,.0f}'.format(vprior_unif_out).replace('$-','-$'))
 
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
         # st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
-        st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
-        st.write('Using these $v_a(\Theta)$',value_array_df)
-
+        #st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
+        
         # Need a marginal estimate 
         # Calculate marg_input, marg_unif       
         # Passing unscale likelihood?
@@ -228,10 +227,13 @@ if uploaded_files is not None:
         st.latex(r''' Pr( \Theta = \theta_i | X =x_j ) = 
             \frac{Pr(\Theta = \theta_i ) Pr( X=x_j | \Theta = \theta_i )}{Pr (X=x_j)} 
             ''')
-
+        
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
+        st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
         st.write('with uniform marginal', '${:0,.0f}'.format(VII_unifMarginal).replace('$-','-$'))
+        st.write('Using these $v_a(\Theta)$',value_array_df)
+
     else: 
         st.write("Please upload data files on left")
 else:
