@@ -50,7 +50,7 @@ showVperfect = st.checkbox('Show Vperfect')
 firstfig, ax = plt.subplots()
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Value [\$]',fontsize=14)
-plt.xlabel('Dryhole Cost')
+plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
 #st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
 ax.text(np.min(value_drill_DRYHOLE), value_array[-1,-1]*0.7, r'$v_{a=Drill}(x=Positive) =$'+'\${:0,.0f}'.format(value_array[-1,-1]), 
@@ -77,7 +77,7 @@ formatter.set_scientific(False)
 # ax.yaxis.set_major_formatter(formatter)
 ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax.xaxis.set_major_formatter(formatter)
-ax.xaxis.set_major_formatter('${x:1.0f}')
+ax.xaxis.set_major_formatter('${x:0,.0f}')
 st.pyplot(firstfig)
 
 if showVperfect:  
