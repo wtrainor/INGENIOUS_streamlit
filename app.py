@@ -21,7 +21,7 @@ import mymodule
 
 # PRIORS - > USER INPUT
 st.header('Should you enter the geothermal lottery without further information?')
-st.write('What\'s the Prior Probability $Pr(.)$ of a POSITIVE geothermal site?')
+#st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
 Pr_prior_POS_demo = mymodule.Prior_probability_binary() #np.linspace(0.05,1,20) 
 
 #### start of paste  -> CHANGE to input
@@ -41,7 +41,7 @@ VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE
 # l2 = list(map(lambda v: v ** 2, l1))
 vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
                                                               value_array,vv),value_drill_DRYHOLE))
-st.subheader('Yes if Vprior is positive. Vprior with $Pr(POSITIVE)$='+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
+st.subheader('Yes if $V_{prior}$ is positive. $Pr(X=Positive)$='+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
 st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(X = x_i)  v_a(x_i) \ \  \forall a $''')
 
 
@@ -49,11 +49,11 @@ showVperfect = st.checkbox('Show Vperfect')
 
 firstfig, ax = plt.subplots()
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
-plt.ylabel('$V_{prior}$',fontsize=14)
+plt.ylabel(r'Value [\$]',fontsize=14)
 plt.xlabel('Dryhole Cost')
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
 #st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
-ax.text(np.min(value_drill_DRYHOLE), value_array[-1,-1]*0.5, r'$v_{a=Drill}(x=Positive) =$'+'\${:0,.0f}'.format(value_array[-1,-1]), 
+ax.text(np.min(value_drill_DRYHOLE), value_array[-1,-1]*0.7, r'$v_{a=Drill}(x=Positive) =$'+'\${:0,.0f}'.format(value_array[-1,-1]), 
         size=12, color='green',
          #va="baseline", ha="left", multialignment="left",
           horizontalalignment='left',
@@ -70,10 +70,12 @@ if showVperfect:
 plt.legend(loc=1)
 plt.ylim([vprior_INPUT_min,value_array[-1,-1]*0.8]) # YLIM was (VPI_max+20)
 
+
 # additional code before plt.show()
 formatter = ticker.ScalarFormatter()
 formatter.set_scientific(False)
-ax.yaxis.set_major_formatter(formatter)
+# ax.yaxis.set_major_formatter(formatter)
+ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('${x:1.0f}')
 st.pyplot(firstfig)
@@ -150,7 +152,7 @@ if uploaded_files is not None:
         df_screen = df[df[x_cur]>-9999]
         df_screenN = dfN[dfN[x_cur]>-9999]
         st.write('dataframe is shape: {thesize}'.format(thesize=df_screen.shape))
-        st.write('attribute stats ', df_screen[attribute0].describe())
+        #st.write('attribute stats ', df_screen[attribute0].describe())
 
         distance_meters = st.slider('Change likelihood by *screening* distance to positive label [km or meters??]',10, int(np.max(df_screen['PosSite_Distance'])-10), 800, step=100) # min, max, default
         # NEG_distance_meters = st.slider('Change likelihood by *screening* distance to negative label [km or meters??]', 
@@ -158,7 +160,7 @@ if uploaded_files is not None:
 
         # round to make sure it rounds to nearest 10
         dfpair0 = df_screen[(df_screen['PosSite_Distance'] <=round(distance_meters,-1))] 
-        print('dfpair0.head(10)', dfpair0.head(10))
+        
         dfpair = dfpair0[dfpair0[y_cur0]>-9999] 
         # # # OJO : may want to keep this off until have it for NEG 
         dfpairN = df_screenN#[(df_screenN['NegSite_Di'] <=round(NEG_distance_meters,-1))] 
@@ -180,10 +182,8 @@ if uploaded_files is not None:
         # Likelihood via KDE estimate
         predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_params)
 
-      
         #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
         #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
-
 
         st.subheader('Change the Prior :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] of POSITIVE Geothermal site')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
@@ -203,7 +203,7 @@ if uploaded_files is not None:
         post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
 
         value_array = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
-        st.write('value_array', value_array)
+        #st.write('value_array', value_array)
 
         #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
         value_drill_DRYHOLE = np.linspace(100, -1e6,10)
