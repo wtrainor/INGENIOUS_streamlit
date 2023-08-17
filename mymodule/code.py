@@ -14,6 +14,14 @@ import io
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import GridSearchCV
 
+# st.write('X_train',np.shape(X_train))
+# st.write('seaborn version',sns.__version__)
+# st.write('pandas version',pd.__version__)
+# st.write('streamlit version',st.__version__)
+# st.write('numpy version',np.__version__)
+# st.write('matplotlib version',sns.__version__)
+# import sklearn
+# st.write('scikit',sklearn.show_versions()) # sklearn.__version__)
 
 
 class KDEClassifier(BaseEstimator, ClassifierMixin):
@@ -127,20 +135,13 @@ def optimal_bin(X_train, y_train):
     maxValue = x_d[-1]
     bandwidths = np.linspace(0, maxValue, 20)
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths})
-    st.write('X_train',np.shape(X_train))
-    st.write('seaborn version',sns.__version__)
-    st.write('pandas version',pd.__version__)
-    st.write('streamlit version',st.__version__)
-    st.write('numpy version',np.__version__)
-    st.write('matplotlib version',sns.__version__)
-    import sklearn
-    st.write('scikit',sklearn.show_versions()) # sklearn.__version__)
+
     X_train_np = X_train.values
     st.write(X_train.iloc[0:5], X_train_np[0:3])
     grid.fit(X_train_np[:,None],y_train) # removed  [:,None],  .to_numpy() doesn't work np.reshape(,(-1,1)), y_train
     scores = grid.cv_results_['mean_test_score']
-    print(grid.best_params_)
-    print('accuracy =', grid.best_score_)
+    #st.write(grid.best_params_)
+    #st.write('accuracy =', grid.best_score_)
 
     return grid.best_params_
 
@@ -149,8 +150,9 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     #  Original VOI code uses 2d array for likelihood:  models (row) were interpetted where (columns).
     #
     ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
-    kde_pos = KernelDensity(bandwidth=1, kernel='gaussian')
-    kde_neg = KernelDensity(bandwidth=1, kernel='gaussian')
+    st.write('using this otpimized bandwidth:',best_parameters)
+    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
+    kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
