@@ -63,7 +63,7 @@ if showVperfect:
     # st.write('VPI',np.array(VPIlist),vprior_INPUT_demo_list)
     VOIperfect = np.maximum((np.array(VPIlist)-np.array(vprior_INPUT_demo_list)),np.zeros(len(vprior_INPUT_demo_list)))
     # VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
-    ax.plot(value_drill_DRYHOLE,VPIlist,'b', label='$V_{perfect}$')
+    ax.plot(value_drill_DRYHOLE,VPIlist,'b', linewidth=5, alpha=0.5, label='$V_{perfect}$')
     ax.plot(value_drill_DRYHOLE,VOIperfect,'b--', label='$VOI_{perfect}$')
 
 plt.legend(loc=1)
@@ -80,9 +80,10 @@ ax.xaxis.set_major_formatter('${x:0,.0f}')
 st.pyplot(firstfig)
 
 if showVperfect:  
-    st.write(r'''$VOI_{perfect} = V_{perfect}-V_{prior}=$'''+str(VPIlist[0])+' - '+str(vprior_INPUT_demo_list[0]))
+    
     st.write('Since you "know" when either subsurface condition occurs, you can pick the best ($\max\limits_a$) drilling altervative first ($v_a$).')
     st.write(r'''$V_{perfect} =  \Sigma_{i=1}^2 Pr(\Theta = \theta_i) \max\limits_a v_a(\theta_i) \ \  \forall a $''')
+    st.write(r'''$VOI_{perfect} = V_{perfect}-V_{prior}=$'''+str(VPIlist[0])+' - '+str(vprior_INPUT_demo_list[0]))
 
 
 with st.sidebar:
@@ -184,7 +185,7 @@ if uploaded_files is not None:
         #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
         #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
 
-        st.header(':point_down: :violet[Posterior]~:blue[Prior] x Likelhood :point_up_2:')
+        
         #st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
         #st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
         #             :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] \
@@ -192,9 +193,10 @@ if uploaded_files is not None:
           
         st.write(':blue['+r'''$Pr(\Theta = \theta_i)$'''+'] in posterior')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
+        st.header(':point_down: :violet[Posterior]~:blue[Prior]:point_up_2: x Likelhood :arrow_heading_up:')
         # POSTERIOR from WGC
         # posterior = mymodule.Posterior_WGC()
-        # POSTERIOR via_Naive_Bayes: Draw back here is ??? can I get the marginal out? 
+        # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
         post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
 
         value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
@@ -213,16 +215,17 @@ if uploaded_files is not None:
         # st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
         #st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
         
-        # Need a marginal estimate 
-        # Calculate marg_input, marg_unif       
-        # Passing unscale likelihood?
-        Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg)
+        # # DO NOT USEmymodule.marginal( because it's passing unscale likelihood!!!)
+        # # Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
+        Pr_InputMarg, Pr_UnifMarg, Prm_d_Input, Prm_d_Uniform = mymodule.Posterior_by_hand(Pr_prior_POS,predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
         # st.write(np.shape(Pr_Marg),Pr_Marg[0,-20:],Pr_Marg[1,-20:])
         
-        mymodule.Posterior_Marginal_plot(post_input, post_uniform, np.sum(Pr_Marg,0), x_cur, x_sampled)
+        mymodule.Posterior_Marginal_plot(Prm_d_Input, Prm_d_Uniform, Pr_InputMarg, x_cur, x_sampled) # WAS inputting: post_input, post_uniform, Pr_Marg, x_cur, x_sampled)
 
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
-        VII_input, VII_unifMarginal= mymodule.f_VIMPERFECT(post_input, value_array, Pr_Marg, x_sampled)
+        
+        VII_input = mymodule.f_VIMPERFECT(Prm_d_Input, value_array, Pr_InputMarg)
+        VII_unifPrior = mymodule.f_VIMPERFECT(Prm_d_Uniform, value_array, Pr_UnifMarg)
         
         st.latex(r'''\color{purple} Pr( \Theta = \theta_i | X =x_j ) = \color{blue}
             \frac{Pr(\Theta = \theta_i ) \color{black} Pr( X=x_j | \Theta = \theta_i )}{\color{orange} Pr (X=x_j)} 
@@ -231,7 +234,7 @@ if uploaded_files is not None:
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
         st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
-        st.write('with uniform marginal', '${:0,.0f}'.format(VII_unifMarginal).replace('$-','-$'))
+        st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
         st.write('Using these $v_a(\Theta)$',value_array_df)
 
     else: 
