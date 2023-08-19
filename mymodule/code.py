@@ -46,6 +46,7 @@ class KDEClassifier(BaseEstimator, ClassifierMixin):
                         for Xi in training_sets]
         self.logpriors_ = [np.log(Xi.shape[0] / X.shape[0])
                            for Xi in training_sets]
+        #st.write('self.logpriors_',self.logpriors_)
         return self
 
     def predict_proba(self, X):
@@ -133,7 +134,7 @@ def optimal_bin(X_train, y_train):
     x_d = np.linspace(min(X_train), max(X_train), 100)
     
     maxValue = x_d[-1]
-    bandwidths = np.linspace(0, maxValue, 20)
+    bandwidths = np.linspace(1e-3, maxValue/3.0, 20) # was max value of attribute. not useful
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths})
 
     X_train_np = X_train.values
@@ -151,8 +152,8 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     #
     ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
     st.write('using this otpimized bandwidth:',best_parameters)
-    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
-    kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
+    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
+    kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'] , kernel='gaussian')
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
@@ -170,15 +171,18 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     kde_neg.fit(forkde_neg_np[:,np.newaxis])
     
     x_d = np.linspace(min(X_train), max(X_train), 100) 
-    Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis])
+    Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis]) #.score_samples
     Likelihood_logprob_neg = kde_neg.score_samples(x_d[:,np.newaxis])
     st.write('Staying consistent, rows are *TRUE decision parameter* and columns are *interpretations*.')
     #st.write(np.vstack((Likelihood_logprob_pos,Likelihood_logprob_neg)))
     #st.write(np.exp(np.vstack((Likelihood_logprob_pos,Likelihood_logprob_neg))))  
 
+    pos_like_scaled = np.exp(Likelihood_logprob_pos)/np.sum(np.exp(Likelihood_logprob_pos))
+    neg_like_scaled = np.exp(Likelihood_logprob_neg)/np.sum(np.exp(Likelihood_logprob_neg))
+
     fig2, axes = plt.subplots(figsize=(15,8),ncols=2,nrows=1)
-    axes[0].fill_between(x_d, np.exp(Likelihood_logprob_pos), alpha=0.3,color='green',label='$~Pr(x | y=Geothermal_{pos}$)')
-    axes[0].fill_between(x_d, np.exp(Likelihood_logprob_neg), alpha=0.3,color='red',label='$~Pr(x | y=Geothermal_{neg}$)')
+    axes[0].fill_between(x_d, pos_like_scaled, alpha=0.3,color='green',label='$~Pr(x | y=Geothermal_{pos}$)')
+    axes[0].fill_between(x_d, neg_like_scaled, alpha=0.3,color='red',label='$~Pr(x | y=Geothermal_{neg}$)')
     axes[0].legend(loc=0)
     axes[0].set_ylabel('Log ~ Likelihood ~Pr(x | y=Geothermal_{positive}', fontsize=15)
     axes[0].set_xlabel(str(x_cur), fontsize=15)
@@ -223,12 +227,14 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
 
     axes.set_xlabel('Interpretation / Data Attribute ($j$)',fontsize=15)
     axes.set_ylabel('Pos / Neg Label ($i$)', fontsize=15)
-    st.pyplot(fig3)
+    # st.pyplot(fig3)
 
     ## RECALCULATE counts with smoothed Likelihood ????
         
        
-    return Likelihood_logprob_pos, Likelihood_logprob_neg, x_d, count_ij 
+    #return Likelihood_logprob_pos, Likelihood_logprob_neg, x_d, count_ij 
+    # NOT LOG LIKELIHOOD
+    return pos_like_scaled, neg_like_scaled, x_d, count_ij 
 
 # Not used right now #
 # def Prior_probability_continuous(x_sample, X_train, x_cur):
@@ -316,9 +322,12 @@ def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_s
 def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):    
     
     fig4, axes = plt.subplots(figsize=(15,8),ncols=1,nrows=1)
-    plt.plot(x_sample,np.exp(post_input[:,1]),'g--', linewidth=4, label='$Pr(Positive|{})$ with Input Prior'.format(x_cur))
-    plt.plot(x_sample,np.exp(post_input[:,0]),'r--', linewidth=4,label='$Pr(Negative|{})$ with Input Prior'.format(x_cur))
-    plt.plot(x_sample,np.exp(post_uniform[:,1]),'k-', linewidth=4,label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
+    plt.plot(x_sample,post_input[:,1],color='purple', linewidth=4)
+    plt.plot(x_sample,post_input[:,1],'g--', linewidth=3, label='$Pr(Positive|{})$ with Input Prior'.format(x_cur))
+    plt.plot(x_sample,post_input[:,0],color='purple', linewidth=4)
+    plt.plot(x_sample,post_input[:,0],'r--', linewidth=3,label='$Pr(Negative|{})$ with Input Prior'.format(x_cur))
+    plt.plot(x_sample,post_uniform[:,1],'g--', alpha=0.3, linewidth=3,label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
+    plt.plot(x_sample,post_uniform[:,1],color='purple', alpha=0.3)
     plt.ylim([0,1])
     plt.legend(loc=2,fontsize=18,facecolor='w')#,draggable='True') 
     plt.xlabel(str(x_cur), fontsize=20)
@@ -354,21 +363,46 @@ def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
 
     return
 
-# def Posterior_by_hand(Pr_input_POS,Likelihood_logprob_pos, Likelihood_logprob_neg):
+def Posterior_by_hand(Pr_input_POS,Likelihood_pos, Likelihood_neg,x_sampled):
+    # Likelihood from KDE, no longer log-probability, properly normalized
+    # data x model
 
-#     likelihood = np.vstack((Likelihood_logprob_pos, Likelihood_logprob_neg))
+    likelihood = np.transpose(np.vstack((Likelihood_neg, Likelihood_pos)))
+    #st.write('np.sum(likelihood,1)',np.shape(likelihood),np.sum(likelihood,1))
 
-#     X_input_prior_weight = np.outer(np.ones((np.shape(likelihood)[1],)),Pr_input_POS )
-#     X_unif_prior_weight = np.outer(np.ones((np.shape(likelihood)[1],)), 0.5)
-#     print('Uniform Prior array:', X_unif_prior_weight)
-#     st.write('Input Prior array:', X_input_prior_weight)
+    X_input_prior_weight_POS = np.outer(np.ones((np.shape(likelihood)[0],)),Pr_input_POS )
+    X_input_prior_weight_NEG = np.outer(np.ones((np.shape(likelihood)[0],)),1.0-Pr_input_POS )
+    X_input_prior_weight= np.hstack((X_input_prior_weight_NEG,X_input_prior_weight_POS))
 
-#     Pr_UnifMarg= np.sum(X_unif_prior_weight * likelihood,0)
-#     Pr_InputMarg = np.sum(X_input_prior_weight * likelihood,0)
-#     print('Pr_UnifMarg',Pr_UnifMarg)
-#     print('Pr_NarMarg',Pr_NarMarg)
+    #st.write('Input Prior Weight array:', np.shape(X_input_prior_weight), X_input_prior_weight[0:10])
+    Pr_InputMarg = np.sum(X_input_prior_weight * likelihood,1) # sum across model classes, columns
 
-#     return
+    X_unif_prior_weight = np.transpose(np.outer(np.ones((np.shape(likelihood)[1],)), 0.5))
+    #print('Uniform Prior array:', X_unif_prior_weight)
+    Pr_UnifMarg= np.sum(X_unif_prior_weight * likelihood,1)  # sum over model classes, columns
+    
+    #st.write('Pr_InputMarg',np.shape(Pr_InputMarg), np.sum(Pr_InputMarg))
+    #st.write(Pr_InputMarg)
+    # st.write('Pr_UnifMarg',Pr_UnifMarg)
+  
+    # # Plot for looking at marginal(s)
+    figM, axes = plt.subplots(figsize=(15,8),ncols=1)
+    axes.plot(x_sampled,Pr_InputMarg,'.',color='orange', label='Pr_InputMarg')
+    # axes.plot(x_sampled,Pr_InputMarg[0,:],'.r')
+    axes.plot(x_sampled,Pr_UnifMarg,'*g',label='marginal with unif prior')
+    axes.legend()
+    st.pyplot(figM)
+
+    # POSTERIOR
+    InputMarg_weight = np.kron(Pr_InputMarg[:,np.newaxis],np.ones((1,np.shape([1-Pr_input_POS,Pr_input_POS])[0]))) # should be num classes, num of Thetas
+    UnifMarg_weight = np.kron(Pr_UnifMarg[:,np.newaxis],np.ones((1,np.shape([0.5,0.5])[0])))
+    #st.write('marginals as 2d array InputMarg_weight',InputMarg_weight)
+
+    Prm_d_Uniform = X_unif_prior_weight * likelihood / UnifMarg_weight
+    Prm_d_Input = X_input_prior_weight * likelihood / InputMarg_weight
+    #st.write('Prm_d_Input',Prm_d_Input)
+
+    return Pr_InputMarg, Pr_UnifMarg, Prm_d_Input, Prm_d_Uniform
 
 
 def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
@@ -423,7 +457,7 @@ def f_VPRIOR(PriorWeight, value_array_mod, *args):
 
     
     Vprior = np.max(v_a) ; 
-    print('Vprior=', Vprior)
+    #print('Vprior=', Vprior)
     
     return Vprior
 
@@ -441,7 +475,7 @@ def Vperfect(input_prior, value_array_mod, *args):
 
     return VPI
 
-def marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg):
+def marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled):
     """
      How frequent is each data bin?
       in clay cap code: np.sum(X_unif_prior_weight * likelihood,0) where SUM is over model...
@@ -453,24 +487,26 @@ def marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg):
     
     #    likesum = np.exp(predictedLikelihood_pos)+np.exp(predictedLikelihood_neg)
         # scale = 1.0/likesum
-    # figT, axes = plt.subplots(figsize=(15,8),ncols=1)
-    # axes.plot(x_sampled,scale*np.exp(predictedLikelihood_pos),'.g')
-    # axes.plot(x_sampled,scale*np.exp(predictedLikelihood_neg),'.r')
-    # axes.plot(x_sampled,marg_w*(marg_input_POS+marg_input_NEG),'*c')
-    # st.pyplot(figT)
+    figT, axes = plt.subplots(figsize=(15,8),ncols=1)
+    axes.plot(x_sampled,np.exp(predictedLikelihood_pos),'.g')
+    axes.plot(x_sampled,np.exp(predictedLikelihood_neg),'.r')
+    axes.plot(x_sampled,marg_w*(marg_input_POS+marg_input_NEG),'*c')
+    #st.pyplot(figT)
     #st.write('MARG SUM', np.sum(marg_w*(marg_input_POS+marg_input_NEG)))
 
-    return marg_w*np.vstack((marg_input_NEG, marg_input_NEG))
+    #return marg_w*np.vstack((marg_input_NEG, marg_input_POS)) ## what the hell is this?
+    st.write('np.shape(Pr_d)',np.shape(marg_w*(marg_input_NEG+marg_input_POS)))
+    return marg_w*(marg_input_NEG+marg_input_POS)
 
-def f_VIMPERFECT(Prm_d,value_array,Pr_d,x_sample,*args):
+def f_VIMPERFECT(Prm_d,value_array,Pr_d,*args):
     """
     Function to calculate the highest decision action/alternative (a) given the 
     
     Parameters
-    Prm_d_all : array_like, posterior weighted value outcomes.
+    Prm_d : array_like, posterior. rows=data space, cols= neg, positive
     value_array : the value array, contains the value outcomes for each possible 
-            NEG/POS (row, was clay cap) and decision alternative (drill/nothing)
-    Pr_d : array_like, marginal probability
+            NEG/POS (columns was clay cap) and decision alternative (rows drill/nothing)
+    Pr_d : array_like, marginal probability, rows= data, cols= neg/pos
     cur_dryhole_value : float, optional, value amount for testing VOI sensitivity
     """
     cur_value_drill_DRYHOLE = None 
@@ -487,25 +523,35 @@ def f_VIMPERFECT(Prm_d,value_array,Pr_d,x_sample,*args):
         value_array[1,0] = cur_value_drill_DRYHOLE 
 
     v_a = []
+    
+    # st.write('np.shape(np.exp(Prm_d))',np.shape(np.exp(Prm_d)))
+    # st.write('np.exp(Prm_d[0,0]),np.exp(Prm_d[0,-1]',np.exp(Prm_d[0,0]),np.exp(Prm_d[0,-1]))
+    # st.write('np.exp(Prm_d[-1,0]),np.exp(Prm_d[-1,-1])',np.exp(Prm_d[-1,0]),np.exp(Prm_d[-1,-1]))
+    # st.pyplot(plt.hist(Prm_d))
 
     ## # Loop through Interpretation bins ~X (columns of Prm_d)
     #for nl in np.arange(0, num_layers):
     v_aj = []
-    for j in range(0,np.shape(Prm_d)[0]): #rows, data space, resisitivity
+    for j in range(0,np.shape(Prm_d)[0]): #rows=data space, cols= neg, positive
         v_a = []
         ### v_a0 = PrmVul_d[:,j] * x_iVula0  + PrmComp_d[j] * x_iCompa0 
         #print('j: get average',j)
         for a in range(0,np.shape(value_array)[0]):  
             #   [(1 of N) array]  * [1 * M array]
-            v_i= sum((Prm_d[j] * value_array[a,:]))
-            #print('(v_i)', v_i)
+            v_i= sum(Prm_d[j] * value_array[a,:]) # Prm_d: [neg,pos] v_a row: one action at a time
+            if j >90:
+                print('Prm_d, v_a, (v_i) ', np.exp(Prm_d[j]), value_array[a,:], v_i)
+            
             v_a = np.append(v_a, v_i)
         v_aj = np.append(v_aj, np.max(v_a))
-
+    
     v_aj_array = np.append(v_aj_array,v_aj,axis=0)
+    # st.write('v_aj_array',np.max(v_aj_array))
+    # st.dataframe(Pr_d * v_aj_array)
 
     # VII:  Value WITH imperfect information
+    # print('np.shape(Pr_d) np.sum(Pr_d)',np.shape(Pr_d), np.sum(Pr_d))
+    # print(Pr_d[-10:])      
     VII = np.sum(Pr_d * v_aj_array)
 
-    VII_unifmarginal = np.sum(1.0/len(x_sample) * v_aj_array)
-    return VII, VII_unifmarginal
+    return VII
