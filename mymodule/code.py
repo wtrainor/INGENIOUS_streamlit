@@ -114,7 +114,7 @@ def my_kdeplot(dfpair,x_cur,y_cur0,dfpairN=None):
     axes[1].set_xlabel(str(x_cur), fontsize=15)
     axes[1].set_ylabel(str(y_cur0), fontsize=15)
 
-    st.pyplot(fig)
+    # st.pyplot(fig)
     # waiting_condition =0
     return #waiting_condition
 
@@ -134,7 +134,10 @@ def optimal_bin(X_train, y_train):
     x_d = np.linspace(min(X_train), max(X_train), 100)
     
     maxValue = x_d[-1]
-    bandwidths = np.linspace(1e-3, maxValue/3.0, 20) # was max value of attribute. not useful
+    range_div20 = (maxValue - x_d[0])/20.0; #st.write('range_div20 ',range_div20 )
+   
+    bandwidths = np.linspace(range_div20  , maxValue/3.0, 40) # was max value of attribute. not useful
+    
     grid = GridSearchCV(KDEClassifier(), {'bandwidth': bandwidths})
 
     X_train_np = X_train.values
@@ -151,9 +154,10 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     #  Original VOI code uses 2d array for likelihood:  models (row) were interpetted where (columns).
     #
     ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
-    st.write('using this otpimized bandwidth:',best_parameters)
-    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
-    kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'] , kernel='gaussian')
+    #st.write('using this otpimized bandwidth:',best_parameters)
+    
+    kde_pos = KernelDensity(bandwidth= best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
+    kde_neg = KernelDensity(bandwidth= best_parameters['bandwidth'], kernel='gaussian')
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
@@ -173,32 +177,49 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     x_d = np.linspace(min(X_train), max(X_train), 100) 
     Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis]) #.score_samples
     Likelihood_logprob_neg = kde_neg.score_samples(x_d[:,np.newaxis])
-    st.write('Staying consistent, rows are *TRUE decision parameter* and columns are *interpretations*.')
+    
     #st.write(np.vstack((Likelihood_logprob_pos,Likelihood_logprob_neg)))
     #st.write(np.exp(np.vstack((Likelihood_logprob_pos,Likelihood_logprob_neg))))  
 
     pos_like_scaled = np.exp(Likelihood_logprob_pos)/np.sum(np.exp(Likelihood_logprob_pos))
     neg_like_scaled = np.exp(Likelihood_logprob_neg)/np.sum(np.exp(Likelihood_logprob_neg))
+    # st.write(kde_pos.bandwidth, (X_test.max() - X_test.min()) / kde_pos.bandwidth)
+    fig2, ax2 = plt.subplots(figsize=(15,8),ncols=1,nrows=1) # CHANGED to one subplot
+    # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
+    #n_out = ax2.hist([X_test[y_test>0],X_test[y_test==0]], alpha=0.5,facecolor=['g','r'],
+    n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
+                     histtype='barstacked', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)') #rwidth= kde_pos.bandwidth,
+    n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
+                     histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)') #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
+                     
+    ax2.legend(fontsize=18)
+    ax2.set_ylabel('Empirical data counts', fontsize=18)
+    ax2_ylims = ax2.axes.get_ylim()  
 
-    fig2, axes = plt.subplots(figsize=(15,8),ncols=2,nrows=1)
-    axes[0].fill_between(x_d, pos_like_scaled, alpha=0.3,color='green',label='$~Pr(x | y=Geothermal_{pos}$)')
-    axes[0].fill_between(x_d, neg_like_scaled, alpha=0.3,color='red',label='$~Pr(x | y=Geothermal_{neg}$)')
-    axes[0].legend(loc=0)
-    axes[0].set_ylabel('Log ~ Likelihood ~Pr(x | y=Geothermal_{positive}', fontsize=15)
-    axes[0].set_xlabel(str(x_cur), fontsize=15)
-    ax2 = plt.twinx(ax=axes[0])
-    ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
-    ax2.legend()
-    ax2.set_ylabel('Empirical data counts', fontsize=15,rotation=-90)
+    ax1 = plt.twinx(ax=ax2)
+    ax1.fill_between(x_d, pos_like_scaled, alpha=0.3,color='green')
+    ax1.plot(x_d,pos_like_scaled,'g.')
+    ax1.fill_between(x_d, neg_like_scaled, alpha=0.3,color='red')
+    ax1.plot(x_d,neg_like_scaled,'r.')
+    ax1.legend(loc=0, fontsize=17)
+    ax1.set_ylabel(' Likelihood $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=15)#, rotation=-90)
+    ax2.set_xlabel(str(x_cur), fontsize=18)
+    ax_ylims = ax1.axes.get_ylim()  
+    #print('ax_ylims',ax_ylims)
+    #st.write('ax_ylims',ax_ylims)
+    ax1.set_ylim(0,ax_ylims[1])
+   
+    # ax1.set_ylim(0,ax2_ylims[1])
     
-    #.iloc[:,feat4]
-    # n_out = plt.hist([X_test[y_test>0],X_test[y_test==0]], color=['r','g'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
-    #.iloc[:,feat4]
-    n_out = axes[1].hist([X_test[y_test>0],X_test[y_test==0]], color=['g','r'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
+    # #.iloc[:,feat4]
+    # # n_out = plt.hist([X_test[y_test>0],X_test[y_test==0]], color=['r','g'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
+    # #.iloc[:,feat4]
+    # n_out = axes[1].hist([X_test[y_test>0],X_test[y_test==0]], color=['g','r'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
     st.pyplot(fig2)
     #st.write('WIDTH of BARS: rwidth=(X_test.max() - X_test.min())',rwidth=(X_test.max() - X_test.min()))    
       
     ### COUNT ARRAY FIGURE # # # # #  #
+    #st.write('Staying consistent, rows are *TRUE decision parameter* and columns are *interpretations*.')
     pos_counts = n_out[0][0] 
     neg_counts = n_out[0][1]
     count_ij= np.vstack((n_out[0][0],n_out[0][1]))
@@ -322,12 +343,12 @@ def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_s
 def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):    
     
     fig4, axes = plt.subplots(figsize=(15,8),ncols=1,nrows=1)
-    plt.plot(x_sample,post_input[:,1],color='purple', linewidth=4)
-    plt.plot(x_sample,post_input[:,1],'g--', linewidth=3, label='$Pr(Positive|{})$ with Input Prior'.format(x_cur))
-    plt.plot(x_sample,post_input[:,0],color='purple', linewidth=4)
+    plt.plot(x_sample,post_input[:,1],color='purple', linewidth=6, alpha=0.7)
+    plt.plot(x_sample,post_input[:,1],color='lime',linestyle='--', linewidth=3, label='$Pr(Positive|{})$ with Input Prior'.format(x_cur))
+    plt.plot(x_sample,post_input[:,0],color='purple', linewidth=6)
     plt.plot(x_sample,post_input[:,0],'r--', linewidth=3,label='$Pr(Negative|{})$ with Input Prior'.format(x_cur))
-    plt.plot(x_sample,post_uniform[:,1],'g--', alpha=0.3, linewidth=3,label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
-    plt.plot(x_sample,post_uniform[:,1],color='purple', alpha=0.3)
+    plt.plot(x_sample,post_uniform[:,1],'g--', alpha=0.1, linewidth=3,label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
+    plt.plot(x_sample,post_uniform[:,1],color='purple', alpha=0.1)
     plt.ylim([0,1])
     plt.legend(loc=2,fontsize=18,facecolor='w')#,draggable='True') 
     plt.xlabel(str(x_cur), fontsize=20)
@@ -391,7 +412,7 @@ def Posterior_by_hand(Pr_input_POS,Likelihood_pos, Likelihood_neg,x_sampled):
     # axes.plot(x_sampled,Pr_InputMarg[0,:],'.r')
     axes.plot(x_sampled,Pr_UnifMarg,'*g',label='marginal with unif prior')
     axes.legend()
-    st.pyplot(figM)
+    # st.pyplot(figM)
 
     # POSTERIOR
     InputMarg_weight = np.kron(Pr_InputMarg[:,np.newaxis],np.ones((1,np.shape([1-Pr_input_POS,Pr_input_POS])[0]))) # should be num classes, num of Thetas
@@ -539,8 +560,8 @@ def f_VIMPERFECT(Prm_d,value_array,Pr_d,*args):
         for a in range(0,np.shape(value_array)[0]):  
             #   [(1 of N) array]  * [1 * M array]
             v_i= sum(Prm_d[j] * value_array[a,:]) # Prm_d: [neg,pos] v_a row: one action at a time
-            if j >90:
-                print('Prm_d, v_a, (v_i) ', np.exp(Prm_d[j]), value_array[a,:], v_i)
+            #if j >90:
+            #    print('Prm_d, v_a, (v_i) ', np.exp(Prm_d[j]), value_array[a,:], v_i)
             
             v_a = np.append(v_a, v_i)
         v_aj = np.append(v_aj, np.max(v_a))
