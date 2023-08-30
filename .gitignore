@@ -1,3 +1,6 @@
+# Regular Python bytecode file
+*.pyc
+
 /.DS_Store
 /assets
 mymodule/__pycache__/code.cpython-39.pyc
