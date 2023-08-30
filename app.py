@@ -100,10 +100,12 @@ with st.sidebar:
                 neg_upload_file = uploaded_file
                 dfN = pd.read_csv(neg_upload_file)
                 st.write('NEG File preview...')
-                st.write(dfN.head())
+                st.write(dfN.describe())
             elif uploaded_file.name[0:3]=='POS':
                 pos_upload_file = uploaded_file
                 df = pd.read_csv(pos_upload_file)
+                st.write('POS File summary...')
+                st.write(df.describe())
             else:
                 st.write('Dude, you didn\'t select a POS and NEG file, try again')
 
@@ -146,8 +148,12 @@ if uploaded_files is not None:
     
         screen_att0 ='PosSite_Di'
         screen_att1 ='NegSite_Di'
-        y_cur0 = 'GeodeticStrainRate'  # hard code for now will come from multiselect
-        # xmax_cur
+        if any(df.columns.str.contains('GeodeticStrainRate')):
+            y_cur0 = 'GeodeticStrainRate'  # hard code for now will come from multiselect
+        elif any(df.columns.str.contains('geod_2ndinv_conus117_250m')):
+            y_cur0 = 'geod_2ndinv_conus117_250m'
+        else:
+            st.print('no know strain in df')
 
         df_screen = df[df[x_cur]>-9999]
         df_screenN = dfN[dfN[x_cur]>-9999]
@@ -161,9 +167,9 @@ if uploaded_files is not None:
         # round to make sure it rounds to nearest 10
         dfpair0 = df_screen[(df_screen['PosSite_Distance'] <=round(distance_meters,-1))] 
         
-        dfpair = dfpair0[dfpair0[y_cur0]>-9999] 
+        dfpair = dfpair0[dfpair0[x_cur]>-9999] 
         # # # OJO : may want to keep this off until have it for NEG 
-        dfpairN = df_screenN#[(df_screenN['NegSite_Di'] <=round(NEG_distance_meters,-1))] 
+        dfpairN = df_screenN[(df_screenN['NegSite_Distance'] <=round(distance_meters,-1))] 
         
         st.subheader('Calculate & Display Likelihoods')
         st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
