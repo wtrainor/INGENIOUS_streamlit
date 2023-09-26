@@ -156,8 +156,8 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
     #st.write('using this otpimized bandwidth:',best_parameters)
     
-    kde_pos = KernelDensity(bandwidth= best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
-    kde_neg = KernelDensity(bandwidth= best_parameters['bandwidth'], kernel='gaussian')
+    kde_pos = KernelDensity(best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
+    kde_neg = KernelDensity(best_parameters['bandwidth'], kernel='gaussian')
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
@@ -194,6 +194,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
                      
     ax2.legend(fontsize=18)
     ax2.set_ylabel('Empirical data counts', fontsize=18)
+    ax2.tick_params(labelsize=20)
     ax2_ylims = ax2.axes.get_ylim()  
 
     ax1 = plt.twinx(ax=ax2)
@@ -202,8 +203,9 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     ax1.fill_between(x_d, neg_like_scaled, alpha=0.3,color='red')
     ax1.plot(x_d,neg_like_scaled,'r.')
     ax1.legend(loc=0, fontsize=17)
-    ax1.set_ylabel(' Likelihood $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=15)#, rotation=-90)
+    ax1.set_ylabel(' Likelihood $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=25)#, rotation=-90)
     ax2.set_xlabel(str(x_cur), fontsize=18)
+    ax1.tick_params(labelsize=20)
     ax_ylims = ax1.axes.get_ylim()  
     #print('ax_ylims',ax_ylims)
     #st.write('ax_ylims',ax_ylims)
@@ -353,14 +355,14 @@ def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
     plt.legend(loc=2,fontsize=18,facecolor='w')#,draggable='True') 
     plt.xlabel(str(x_cur), fontsize=20)
     plt.ylabel('Posterior Probability', fontsize=20, color='purple')
-    axes.tick_params(axis='x', which='both', labelsize=15)
-    axes.tick_params(axis='y', which='both', labelsize=15, colors='purple')
+    axes.tick_params(axis='x', which='both', labelsize=20)
+    axes.tick_params(axis='y', which='both', labelsize=20, colors='purple')
 
     ax2 = axes.twinx()
     ax2.plot(x_sample,marg,color='orange',linestyle='dashdot', label='Marginal $Pr(X=x_j)$',alpha=0.7)
     ax2.fill_between(x_sample,marg, where=marg>=np.zeros(len(x_sample)), interpolate=True, color='orange',alpha=0.03)
-    ax2.tick_params(axis='x', which='both', labelsize=15)
-    ax2.tick_params(axis='y', which='both', colors='orange', labelsize=15)
+    ax2.tick_params(axis='x', which='both', labelsize=20)
+    ax2.tick_params(axis='y', which='both', colors='orange', labelsize=20)
     ax2.set_ylabel('Marginal Probability', color='orange',fontsize=20)
       
     # plt.legend(loc=1,fontsize=18) 
