@@ -156,8 +156,8 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
     #st.write('using this otpimized bandwidth:',best_parameters)
     
-    kde_pos = KernelDensity(best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
-    kde_neg = KernelDensity(best_parameters['bandwidth'], kernel='gaussian')
+    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
+    kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
