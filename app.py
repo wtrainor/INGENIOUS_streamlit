@@ -172,7 +172,7 @@ if uploaded_files is not None:
         dfpairN = df_screenN[(df_screenN['NegSite_Distance'] <=round(distance_meters,-1))] 
         if np.shape(dfpairN)[0]==0:
             st.write('using Q1 distance for Negative sites')
-            dfpairN = df_screenN[(df_screenN['NegSite_Distance'] <= np.percentile(df_screenN['NegSite_Distance'],25))] 
+            dfpairN = df_screenN[(df_screenN['NegSite_Distance'] <= np.percentile(df_screenN['NegSite_Distance'],10))] 
         
         st.subheader('Calculate & Display Likelihoods')
         st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
