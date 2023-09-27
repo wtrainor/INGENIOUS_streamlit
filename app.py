@@ -157,7 +157,7 @@ if uploaded_files is not None:
 
         df_screen = df[df[x_cur]>-9999]
         df_screenN = dfN[dfN[x_cur]>-9999]
-        st.write('dataframe is shape: {thesize}'.format(thesize=df_screen.shape))
+        st.write('dataframe is shape: {thesize}'.format(thesize=df_screenN.shape))
         #st.write('attribute stats ', df_screen[attribute0].describe())
 
         distance_meters = st.slider('Change likelihood by *screening* distance to positive label [km or meters??]',10, int(np.max(df_screen['PosSite_Distance'])-10), 800, step=100) # min, max, default
@@ -170,6 +170,9 @@ if uploaded_files is not None:
         dfpair = dfpair0[dfpair0[x_cur]>-9999] 
         # # # OJO : may want to keep this off until have it for NEG 
         dfpairN = df_screenN[(df_screenN['NegSite_Distance'] <=round(distance_meters,-1))] 
+        if np.shape(dfpairN)[0]==0:
+            st.write('using Q1 distance for Negative sites')
+            dfpairN = df_screenN[(df_screenN['NegSite_Distance'] <= np.percentile(df_screenN['NegSite_Distance'],25))] 
         
         st.subheader('Calculate & Display Likelihoods')
         st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
