@@ -166,11 +166,11 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     # else:
     # if train_test only gets selected x_cur
     forkde_pos = X_train[y_train>0]#.iloc[:,x_cur] #cur_feat
-    forkde_neg = X_train[y_train==0]#.iloc[:,x_cur]
+    forkde_neg = X_train[y_train==0]; 
 
     # two_d = X_train #.iloc[:,x_cur] #cur_feat
     forkde_pos_np = forkde_pos.values
-    forkde_neg_np = forkde_neg.values
+    forkde_neg_np = forkde_neg.values; 
     kde_pos.fit(forkde_pos_np[:,np.newaxis])
     kde_neg.fit(forkde_neg_np[:,np.newaxis])
     
@@ -454,8 +454,8 @@ def f_VPRIOR(PriorWeight, value_array_mod, *args):
     Function to calculate the prior value Vprior 
 
     Parameters
-    PriorWeight: array-like [NEG , POS]
-    value_array: the value array, contains the value outcomes for each possible 
+    PriorWeight: array-like [NEG , POS] [1 x 2]
+    value_array: array-like [num alternatives x 2] the value array, contains the value outcomes for each possible 
           NEG/POS (row, was clay cap) and decision alternative (drill/nothing)
     cur_value_drill_DRYHOLE : float, optional, value amount for testing VOI sensitivity
 
@@ -485,7 +485,16 @@ def f_VPRIOR(PriorWeight, value_array_mod, *args):
     return Vprior
 
 def Vperfect(input_prior, value_array_mod, *args):
-     ## $VOI_{Perfect}$ doesn't need data loop: diagonal of value matrix
+    """
+    Function to calculate the value with perfect information VPI 
+
+    Parameters
+    input_prior: array-like [NEG , POS] [1 x 2]
+    value_array_mod: array-like [num alternatives x 2] the value array, contains the value outcomes for each possible 
+          NEG/POS (row, was clay cap) and decision alternative (drill/nothing)
+    additional args
+    cur_value_drill_DRYHOLE : float, optional, value amount for testing VOI sensitivity
+    """
 
     cur_value_drill_DRYHOLE = None 
     for n in args:
