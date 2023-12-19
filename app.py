@@ -22,7 +22,7 @@ import mymodule
 # PRIORS - > USER INPUT
 st.header('Should you enter the geothermal lottery without further information?')
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
-Pr_prior_POS_demo = mymodule.Prior_probability_binary() #np.linspace(0.05,1,20) 
+Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
 #### start of paste  -> CHANGE to input
 count_ij = np.zeros((2,10))
@@ -184,7 +184,7 @@ if uploaded_files is not None:
         # waiting_condition = mymodule.my_kdeplot(dfpair,x_cur,y_cur0,y_cur1,waiting_condition)
         
         # split up if we want to test bandwidth 
-        X_train, X_test, y_train, y_test = mymodule.make_train_test(dfpair,x_cur,y_cur0,dfpairN)
+        X_train, X_test, y_train, y_test = mymodule.make_train_test(dfpair,x_cur,dfpairN)
  
         best_params = mymodule.optimal_bin(X_train, y_train)
 
@@ -203,8 +203,7 @@ if uploaded_files is not None:
         st.write(':blue['+r'''$Pr(\Theta = \theta_i)$'''+'] in posterior')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
         st.header(':point_down: :violet[Posterior]~:blue[Prior]:point_up_2: x Likelhood :arrow_heading_up:')
-        # POSTERIOR from WGC
-        # posterior = mymodule.Posterior_WGC()
+        
         # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
         post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
 

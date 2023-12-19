@@ -118,7 +118,21 @@ def my_kdeplot(dfpair,x_cur,y_cur0,dfpairN=None):
     # waiting_condition =0
     return #waiting_condition
 
-def make_train_test(dfpair,x_cur,y_cur0,dfpairN):
+def make_train_test(dfpair,x_cur,dfpairN):
+    """
+    Function to split up data into training and test sections. Only the training part is fed into optimal bin calculation.
+
+    dfpair : pandas dataframe  [len(data in POSITIVE .csv) x 1]
+        data that associated with positive label
+    x_cur : str
+        data attribute chosen by user
+    dfpairN : pandas dataframe  [len(data in NEGATIVE .csv) x 1]
+        data that are associated with negative label
+
+    returns
+         X_train, y_train [(number of data points)*0.67 x 1]
+         X_test, y_test [(number of data points)*0.33 x 1]
+    """
     X_all = pd.concat((dfpair[x_cur],dfpairN[x_cur]))
     
     # Labels 
@@ -130,6 +144,15 @@ def make_train_test(dfpair,x_cur,y_cur0,dfpairN):
     return  X_train, X_test, y_train, y_test 
 
 def optimal_bin(X_train, y_train):
+    """
+    Function that uses grid search and Naive Bayes classification to determine optimal bin size
+    X_train : array_like, 
+        Nrows = [number of data points]*0.67
+        Ncolumns = number of features (current implementation is one at a time)
+    y_train : labels attached to each data point
+
+    Returns are "best parameters" which includes bin size for one feature
+    """
     
     x_d = np.linspace(min(X_train), max(X_train), 100)
     
@@ -150,14 +173,31 @@ def optimal_bin(X_train, y_train):
     return grid.best_params_
 
 def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters):
+    """
+    Smooth out likelihood function & PLOT using optimal bandwidth and return likelihood (positive & negative)
+
+    Parameters
+    ----------
+    X_train : array-like [1 x 0.67*number samples] (67%)
+    X_test : array-like [1 x 0.33*number samples]  (33%)
+    x_cur : string, colummn name of attribute/data type being assessed
+    y_cur0 : 
+    best_parameters : dictionary
+    Output
+    ---------
+    pos_like_scaled (array like) [1 x number of samples]
+    neg_like_scaled (array like) [1 x number of samples]
+    x_d (array): 1 x 100,  = np.linspace(min(X_train), max(X_train), 100) 
+    count_ij [2 x len(x_d)]
     #
-    #  Original VOI code uses 2d array for likelihood:  models (row) were interpetted where (columns).
-    #
-    ### bandwidth=1.0 BANDWIDTH can be optimized for RELIABILITY
-    #st.write('using this otpimized bandwidth:',best_parameters)
+    Can manually fix bandwidth here: bandwidth=1.0 
+    otherwise it uses the optimal BANDWIDTH from Naive Bayes grid search
+    
+    """
     
     kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
     kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
+    #st.write('using this otpimized bandwidth:',best_parameters)
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
@@ -304,9 +344,12 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
 #     return X_unif_prior, X_wideNorm_prior, X_narNorm_prior
 
 def Prior_probability_binary(mykey=None): #x_sample, X_train,
-    
-    # X_locations = x_sample 
-    # X_unif_prior = np.ones(len(X_locations)) /len(X_locations)
+    """
+    Function for slider of prior probability of "positive"
+    Key : string
+        key is given for when it get's called multiple times (e.g. demonstration, then for posterior calculations)
+    """    
+
     
     Pr_POS = st.slider('Choose :blue[prior probability of success (odds in the geothermal lottery)]', float(0.00),float(1.0), float(0.1), float(0.01),key=mykey)
 
@@ -314,17 +357,28 @@ def Prior_probability_binary(mykey=None): #x_sample, X_train,
 
 def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_sample, x_cur):
     """
-    Function to calculate the posterior probability via Naive Bayes 
+    CURRENTLY not being used since it uses UN SCALED Likelihood 
+    Function to calculate the posterior probability via Naive Bayes using prior from slide r
 
     Parameters
     PriorWeight: float, prior value from user input (order : NEG / POS) POSITIVE is second column! 
-    X_train : 
+    X_train : array-like
+        PROPORTION of x_sample??
     X_test : array-like, features in test
     y_train : array-like, labels in train
     y_test : array-like, labels in test
-    x_sample : 
+    x_sample : array-like
+        full data attribute
     x_cur : parameter
 
+    returns 
+         post_input : array-like [len(x_sample) x 2]
+            post_input[:,0] = probability of negative site using input prior
+            post_input[:,1] = probability of positive site using input prior
+         post_uniform : array-like [len(x_sample) x 2]
+            post_uniform[:,0] = probability of negative site using 50/50 prior
+            post_uniform[:,1] = probability of positive site using 50/50 prior
+         
     """
     #   
     # # # # # # 
@@ -342,7 +396,19 @@ def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_s
 
     return post_input, post_uniform
 
-def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):    
+def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
+    """
+    Function plots the posterior values (y-axis) for (x_cur) data attribute values along x-axis at x_sample 
+    post_input : array-like [len(x_sample) x 2]
+        post_input[:,0] = probability of negative site using input prior
+        post_input[:,1] = probability of positive site using input prior
+    post_uniform : array-like [len(x_sample) x 2]
+        post_uniform[:,0] = probability of negative site using 50/50 prior
+        post_uniform[:,1] = probability of positive site using 50/50 prior
+    marg : array-like [len(x_sample)]
+        probability that each attribute value will occur given likelihood and prior scaling
+    x_sample : array-like 
+    """    
     
     fig4, axes = plt.subplots(figsize=(15,8),ncols=1,nrows=1)
     plt.plot(x_sample,post_input[:,1],color='purple', linewidth=6, alpha=0.7)
