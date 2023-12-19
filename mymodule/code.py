@@ -59,9 +59,6 @@ class KDEClassifier(BaseEstimator, ClassifierMixin):
         return self.classes_[np.argmax(self.predict_proba(X), 1)]
     
 
-def math_it_up(*args, **kwargs):
-    return np.log(*args, **kwargs)
-
 def normpdf(x, mean, sd):
     var = float(sd)**2
     pi = 3.1415926
@@ -89,34 +86,6 @@ def st_file_selector(st_placeholder, path='.', label='Please, select a file/fold
         selected_path = st_file_selector(st_placeholder=st_placeholder,
                                          path=selected_path, label=label)
     return selected_path
-
-def make_data():
-    return np.random.normal(1, 1, size=100)
-
-def my_kdeplot(dfpair,x_cur,y_cur0,dfpairN=None):
-    fig, axes = plt.subplots(figsize=(15,8),ncols=2,nrows=1)
-
-    #### 1 variables ##### sns.histplot(data=penguins, x="flipper_length_mm", kde=True)
-    ph0=sns.histplot(data=dfpairN,x=x_cur,kde=True,fill=True,color='r',alpha=0.4,ax=axes[0], 
-                    thresh=0.05,common_norm=True) 
-    ph0=sns.histplot(data=dfpair,x=x_cur,kde=True,fill=True,color='g',alpha=0.6,ax=axes[0], 
-                    thresh=0.05,common_norm=True)
-       
-    axes[0].set_xlabel(str(x_cur), fontsize=15)                            
-    axes[0].set_title(x_cur)
-
-    #### 2 variables ##### 
-    ph=sns.kdeplot(data=dfpair,x=x_cur,y=y_cur0,fill=True,cmap='Greens',alpha=0.4,ax=axes[1], 
-                    thresh=0.05,common_norm=True, cbar=True)
-    
-    ph=sns.kdeplot(data=dfpairN,x=x_cur,y=y_cur0,fill=True,cmap='Reds',alpha=0.4,ax=axes[1],
-                    thresh=0.05,common_norm=True, cbar=True)
-    axes[1].set_xlabel(str(x_cur), fontsize=15)
-    axes[1].set_ylabel(str(y_cur0), fontsize=15)
-
-    # st.pyplot(fig)
-    # waiting_condition =0
-    return #waiting_condition
 
 def make_train_test(dfpair,x_cur,dfpairN):
     """
@@ -185,8 +154,8 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     best_parameters : dictionary
     Output
     ---------
-    pos_like_scaled (array like) [1 x number of samples]
-    neg_like_scaled (array like) [1 x number of samples]
+    pos_like_scaled : (array like) [1 x number of samples]
+    neg_like_scaled : (array like) [1 x number of samples]
     x_d (array): 1 x 100,  = np.linspace(min(X_train), max(X_train), 100) 
     count_ij [2 x len(x_d)]
     #
@@ -299,49 +268,6 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     # NOT LOG LIKELIHOOD
     return pos_like_scaled, neg_like_scaled, x_d, count_ij 
 
-# Not used right now #
-# def Prior_probability_continuous(x_sample, X_train, x_cur):
-#     st.write('Define your Prior Probability (odds in the geothermal lottery)')  # right now could be used to redefine marginal??
-#     X_locations = x_sample # uniformly sampled locations... 
-#     X_unif_prior = np.ones(len(X_locations)) /len(X_locations)
-#     print('Uniform Probability', X_unif_prior)
-
-#     X_wideNorm_prior = []
-#     X_narNorm_prior = []
-
-    
-#     st.write('np.min(X_train), np.max(X_train), np.median(X_train), np.round(np.std(X_train),1)')
-#     st.write(np.min(X_train), np.max(X_train), np.median(X_train), np.round(np.std(X_train),1),X_train.describe())
-    
-#     # GaussianVariance =  np.round(np.std(X_train),1)
-#     mymin = np.round(np.std(X_train),1)*0.5
-#     mymax = np.round(np.std(X_train),1)*2
-#     mydefault =  np.round(np.std(X_train),1)
-#     mystep = np.round(np.std(X_train)/10,2)
-#     st.write(np.round(np.std(X_train),1)*0.5, np.round(np.std(X_train),1)*2, np.round(np.std(X_train),1))
-#     st.write(np.dtype(mymin), np.dtype(mymax), np.dtype(mydefault), np.dtype(mystep)) #0.2, 0.8, 0.4, 0.04
-    
-#     GaussianVariance = st.slider('Choose width of Gaussian Prior', float(mymin),float(mymax), float(mydefault), float(mystep))
-#     for x_i in X_locations:    
-#         # x, mean, sd
-#         prob = normpdf(x_i, np.mean(X_train), GaussianVariance)
-#         X_wideNorm_prior = np.append(X_wideNorm_prior, prob)
-#         prob = normpdf(x_i, np.mean(X_train) ,0.75*GaussianVariance)
-#         X_narNorm_prior = np.append(X_narNorm_prior, prob)
-
-#     Nfactor = 1/float(np.sum(X_narNorm_prior))
-#     Wfactor = 1/float(np.sum(X_wideNorm_prior))
-#     X_wideNorm_prior = Wfactor*X_wideNorm_prior
-#     X_narNorm_prior = Nfactor*X_narNorm_prior
-#     fig3 = plt.figure(figsize=(15,8))
-#     plt.plot(x_sample,X_unif_prior,'k.', label='Uniform Prior $U()$')
-#     plt.plot(x_sample,X_wideNorm_prior,'r--', label='Prior $N(\mu,\sigma)$')
-#     plt.plot(x_sample,X_narNorm_prior,'m*-', label='Prior N($\mu$,0.75$\sigma$)')
-#     plt.xlabel(str(x_cur), fontsize=15)
-#     plt.legend() 
-#     st.pyplot(fig3)
-
-#     return X_unif_prior, X_wideNorm_prior, X_narNorm_prior
 
 def Prior_probability_binary(mykey=None): #x_sample, X_train,
     """
@@ -453,9 +379,17 @@ def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
     return
 
 def Posterior_by_hand(Pr_input_POS,Likelihood_pos, Likelihood_neg,x_sampled):
-    # Likelihood from KDE, no longer log-probability, properly normalized
-    # data x model
-
+    """
+    Calculate the Posterior from the Likelihood from KDE, no longer log-probability, properly normalized with 
+    input posterior and resulting marginal.
+    
+    Parameters:
+    Pr_input_POS : float, prior probability of positive geothermal
+    Likelihood_pos : array-like [1 x 100]
+    Likelihood_neg : array-like [1 x 100]
+    x_sampled : array-like [1 x 100], sample of all possible data values
+    """
+    
     likelihood = np.transpose(np.vstack((Likelihood_neg, Likelihood_pos)))
     #st.write('np.sum(likelihood,1)',np.shape(likelihood),np.sum(likelihood,1))
 
@@ -474,14 +408,6 @@ def Posterior_by_hand(Pr_input_POS,Likelihood_pos, Likelihood_neg,x_sampled):
     #st.write(Pr_InputMarg)
     # st.write('Pr_UnifMarg',Pr_UnifMarg)
   
-    # # Plot for looking at marginal(s)
-    figM, axes = plt.subplots(figsize=(15,8),ncols=1)
-    axes.plot(x_sampled,Pr_InputMarg,'.',color='orange', label='Pr_InputMarg')
-    # axes.plot(x_sampled,Pr_InputMarg[0,:],'.r')
-    axes.plot(x_sampled,Pr_UnifMarg,'*g',label='marginal with unif prior')
-    axes.legend()
-    # st.pyplot(figM)
-
     # POSTERIOR
     InputMarg_weight = np.kron(Pr_InputMarg[:,np.newaxis],np.ones((1,np.shape([1-Pr_input_POS,Pr_input_POS])[0]))) # should be num classes, num of Thetas
     UnifMarg_weight = np.kron(Pr_UnifMarg[:,np.newaxis],np.ones((1,np.shape([0.5,0.5])[0])))
@@ -495,14 +421,11 @@ def Posterior_by_hand(Pr_input_POS,Likelihood_pos, Likelihood_neg,x_sampled):
 
 
 def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
-    
-    # make value_array with 
-    #  rows= NUMBER OF decision alternatives
-    number_a = 2
-    # columns equal to subsurface conditions (decision variables) 
-    # OLD
-    # range_outcomes = np.arange(magnitude,-magnitude,-1000/number_loc)  
-    # value_array = np.zeros((np.shape(count_ij)[0],np.shape(count_ij))[0]))
+    """
+    make value_array with 
+        rows= NUMBER OF decision alternatives, 1st is do nothing, 2nd drill
+        columns = equal to subsurface conditions (decision variables), 1st Negative, 2nd Postive 
+    """
     
     value_array = np.zeros((number_a, np.shape(count_ij)[0]))
     
@@ -521,9 +444,10 @@ def f_VPRIOR(PriorWeight, value_array_mod, *args):
 
     Parameters
     PriorWeight: array-like [NEG , POS] [1 x 2]
-    value_array: array-like [num alternatives x 2] the value array, contains the value outcomes for each possible 
-          NEG/POS (row, was clay cap) and decision alternative (drill/nothing)
-    cur_value_drill_DRYHOLE : float, optional, value amount for testing VOI sensitivity
+    value_array: array-like [num alternatives x num Geothermal labels] the value array, contains the value outcomes for each possible 
+        rows:  do nothing/ drill
+        columns: NEGATIVE/POSITIVE 
+    cur_value_drill_DRYHOLE : float, optional, change/update value amount for dry hole
 
     """
     cur_value_drill_DRYHOLE = None 
@@ -556,8 +480,10 @@ def Vperfect(input_prior, value_array_mod, *args):
 
     Parameters
     input_prior: array-like [NEG , POS] [1 x 2]
-    value_array_mod: array-like [num alternatives x 2] the value array, contains the value outcomes for each possible 
-          NEG/POS (row, was clay cap) and decision alternative (drill/nothing)
+    value_array_mod: array-like [num alternatives x num of geothermal labels] the value array, contains the value outcomes for each possible 
+        geothermal outcome and decision alternative 
+        rows:  do nothing/ drill
+        columns: NEGATIVE/POSITIVE 
     additional args
     cur_value_drill_DRYHOLE : float, optional, value amount for testing VOI sensitivity
     """
@@ -575,9 +501,10 @@ def Vperfect(input_prior, value_array_mod, *args):
 
 def marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled):
     """
-     How frequent is each data bin?
-      in clay cap code: np.sum(X_unif_prior_weight * likelihood,0) where SUM is over model...
-      Returns [2 X nbins] marginal
+     The marginal describes how frequent is each data bin. This function updates the marginal using the
+     prior (input by user) and likelihood (from data selected)
+      
+     Returns [1 X nbins] marginal
     """
     marg_input_POS = Pr_prior_POS * np.exp(predictedLikelihood_pos)
     marg_input_NEG = (1-Pr_prior_POS) * np.exp(predictedLikelihood_neg)
@@ -598,13 +525,18 @@ def marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_s
 
 def f_VIMPERFECT(Prm_d,value_array,Pr_d,*args):
     """
-    Function to calculate the highest decision action/alternative (a) given the 
+    Function to calculate the highest decision action/alternative (a) given the reliability/posterior of data
+    and value_array
     
     Parameters
-    Prm_d : array_like, posterior. rows=data space, cols= neg, positive
-    value_array : the value array, contains the value outcomes for each possible 
-            NEG/POS (columns was clay cap) and decision alternative (rows drill/nothing)
-    Pr_d : array_like, marginal probability, rows= data, cols= neg/pos
+    Prm_d : array_like, [len(x_sampled) x 2]
+        posterior. rows=data space, cols= neg, positive
+    value_array : array-like [ 2 x 2]
+        the value array, contains the value outcomes for each possible decision alternative (rows)
+        a = {drill/nothing}
+        columns= label (columns was clay cap) and decision alternative 
+    Pr_d : array_like, [len(x_sample) x 1]
+        marginal probability, rows= data,
     cur_dryhole_value : float, optional, value amount for testing VOI sensitivity
     """
     cur_value_drill_DRYHOLE = None 
