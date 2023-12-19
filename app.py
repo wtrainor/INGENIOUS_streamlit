@@ -176,7 +176,7 @@ if uploaded_files is not None:
         
         st.subheader('Calculate & Display Likelihoods')
         st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
-        mymodule.my_kdeplot(dfpair,x_cur,y_cur0,dfpairN)
+       
         #waiting_condition = 1
         #while (waiting_condition):
         #    st.image('https://media.giphy.com/media/gu9XBXiz60HlO5p9Nz/giphy.gif')
