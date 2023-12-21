@@ -428,7 +428,7 @@ def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
         number_a : int 
             number of decision alternatives
     """
-    
+    number_a = 2 # set at do nothing or drill 
     value_array = np.zeros((number_a, np.shape(count_ij)[0]))
     
     value_array[0,:] = [0, 0]
