@@ -425,6 +425,8 @@ def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
     make value_array with 
         rows= NUMBER OF decision alternatives, 1st is do nothing, 2nd drill
         columns = equal to subsurface conditions (decision variables), 1st Negative, 2nd Postive 
+        number_a : int 
+            number of decision alternatives
     """
     
     value_array = np.zeros((number_a, np.shape(count_ij)[0]))
