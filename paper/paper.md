@@ -10,7 +10,7 @@ authors:
     orcid: 0000-0002-5726-3886
     equal-contrib: true
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Author Without ORCID
+  - name: Sierra Rosario (Author Without ORCID)
     equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
     affiliation: 2
   - name: Author with no affiliation
@@ -21,9 +21,9 @@ authors:
     surname: Beethoven
     affiliation: 3
 affiliations:
- - name: Lyman Spitzer, Jr. Fellow, Princeton University, USA
+ - name: National Renewable Energy Laboratory, USA
    index: 1
- - name: National Renewable Energy Laboratory, Country
+ - name: Amherst University, USA
    index: 2
  - name: Independent Researcher, Country
    index: 3
