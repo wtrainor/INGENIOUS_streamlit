@@ -164,7 +164,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     
     """
     
-    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'] , kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
+    kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
     kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
     #st.write('using this otpimized bandwidth:',best_parameters)
 
@@ -197,7 +197,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
     #n_out = ax2.hist([X_test[y_test>0],X_test[y_test==0]], alpha=0.5,facecolor=['g','r'],
     n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
-                     histtype='barstacked', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)') #rwidth= kde_pos.bandwidth,
+                     histtype='barstacked', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
     n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
                      histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)') #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
                      
