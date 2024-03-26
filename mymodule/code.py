@@ -206,7 +206,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
                      histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=x_d) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
     n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
-                     histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)',bins=nbins) #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
+                     histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)',bins=x_d) #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
                      
     ax2.legend(fontsize=18)
     ax2.set_ylabel('Empirical data counts', fontsize=18)
