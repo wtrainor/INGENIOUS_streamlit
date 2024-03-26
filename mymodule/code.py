@@ -185,9 +185,11 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     kde_neg.fit(forkde_neg_np[:,np.newaxis])
     
     # nbins = 100
-    x_d = np.arange(np.min(np.concatenate([X_train,X_test])),np.max(np.concatenate([X_train,X_test])),best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
+    x_d = np.arange(np.min(np.concatenate([X_train,X_test])),
+                    np.max(np.concatenate([X_train,X_test])),
+                    best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
     nbins=len(x_d)
-    st.write('max(X_train)-min(X_train)/nbins',max(X_train)-min(X_train)/nbins,'len(xd)=nbins', nbins)
+    st.write('min(x_d)',min(x_d),'max(x_d)',max(x_d),'len(x_d)=nbins', nbins)
 
     Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis]) #.score_samples
     Likelihood_logprob_neg = kde_neg.score_samples(x_d[:,np.newaxis])
@@ -202,7 +204,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
     #n_out = ax2.hist([X_test[y_test>0],X_test[y_test==0]], alpha=0.5,facecolor=['g','r'],
     n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
-                     histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=nbins) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
+                     histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=x_d) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
     n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
                      histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)',bins=nbins) #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
                      
