@@ -38,12 +38,22 @@ aas-journal: Astrophysical Journal <- The name of the AAS journal.
 
 # Summary
 
-The value of information metric is from field of decision analysis. 
+The Geothermal VOI App reveals which data types best distinguish between a 
+hidden conventional geothermal resource and no geothermal resource. Hidden 
+geothermal resources are geothermal resources that do not show any evidence
+of existence on the surface, thus geophysical and geological observations 
+are used to make estimates of subsurface conditions. None of the the data 
+layers are direct evidence of heat, permeability and fluids, therefore 
+they are imperect indicators. The value of information (VOI) metric 
+attempts to quantify how useful specific information types are
+by quantifying their reliability and how it may help or hinder with decisions. 
+VOI is from field of decision analysis and assess if the information will
+improve the average outcome of a decision made under uncertainty, like
+developing a hidden geothermal resource.
 
 # Statement of need
 
-`Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
+Python enables ... for speed without losing
 flexibility or ease-of-use in the user-interface. The API for `Gala` was
 designed to provide a class-based and user-friendly interface to fast (C or
 Cython-optimized) implementations of common operations such as gravitational
@@ -53,6 +63,7 @@ interfaces well with the implementations of physical units and astronomical
 coordinate systems in the `Astropy` package [@astropy] (`astropy.units` and
 `astropy.coordinates`).
 
+Many geoscientists working in geothermal do not actively code.  
 `Gala` was designed to be used by both astronomical researchers and by
 students in courses on gravitational dynamics or astronomy. It has already been
 used in a number of scientific publications [@Pearson:2017] and has also been
@@ -69,7 +80,7 @@ The prior probability $Pr(\Theta = \theta_i)$ where there are two $\theta_i)$:  
 Double dollars make self-standing equations:
 
 $$Pr( \Theta = \theta_i | X =x_j ) = \color{cyan} \frac{Pr(\Theta = \theta_i ) 
-\color{white} Pr( X=x_j | \Theta = \theta_i )}{\color{orange} Pr (X=x_j)}$$
+\color{purple} Pr( X=x_j | \Theta = \theta_i )}{\color{orange} Pr (X=x_j)}$$
 
 You can also use plain \LaTeX for equations
 \begin{equation}\label{eq:fourier}
