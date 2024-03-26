@@ -167,7 +167,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
     kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
     st.write('using this otpimized bandwidth:',best_parameters['bandwidth'])
-    st.write(max(X_train)-min(X_train)/nbins)
+    
 
     # if np.shape(X_train)[1]>2:
     # if train_test only all features
@@ -186,6 +186,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     
     nbins = 100
     x_d = np.linspace(min(X_train), max(X_train), nbins) 
+    st.write(max(X_train)-min(X_train)/nbins)
 
     Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis]) #.score_samples
     Likelihood_logprob_neg = kde_neg.score_samples(x_d[:,np.newaxis])
