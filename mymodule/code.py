@@ -13,6 +13,7 @@ import io
 
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import GridSearchCV
+from sklearn import metrics 
 
 # st.write('X_train',np.shape(X_train))
 # st.write('seaborn version',sns.__version__)
@@ -166,7 +167,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     
     kde_pos = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
     kde_neg = KernelDensity(bandwidth=best_parameters['bandwidth'], kernel='gaussian')
-    st.write('using this otpimized bandwidth:',best_parameters['bandwidth'])
+    st.write('(in likelihood_KDE) using this otpimized bandwidth:',best_parameters['bandwidth'])
     
 
     # if np.shape(X_train)[1]>2:
@@ -341,6 +342,7 @@ def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
     marg : array-like [len(x_sample)]
         probability that each attribute value will occur given likelihood and prior scaling
     x_sample : array-like 
+        Attribute values, sampled from minimum to maximum using ideal bandwidth (e.g. np.arange(min,max,ideal_bandwidth))
     """    
     
     fig4, axes = plt.subplots(figsize=(15,8),ncols=1,nrows=1)
@@ -594,3 +596,17 @@ def f_VIMPERFECT(Prm_d,value_array,Pr_d,*args):
     VII = np.sum(Pr_d * v_aj_array)
 
     return VII
+
+def f_MI(Prm_d,Pr_d,*args):
+    """
+    Function to calculate the mutual information: 
+    Parameters
+    Prm_d : array_like, [len(x_sampled) x 2]
+        posterior. rows=data space, cols= neg, positive
+    
+    Pr_d : array_like, [len(x_sample) x 1]
+        marginal probability, rows= data,
+    """
+    MI_post = metrics.mutual_info_score(Prm_d[:,0],Prm_d[:,1])
+
+    return MI_post

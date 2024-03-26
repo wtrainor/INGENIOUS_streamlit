@@ -244,6 +244,8 @@ if uploaded_files is not None:
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
         st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
         st.write('Using these $v_a(\Theta)$',value_array_df)
+        MI_post = mymodule.f_MI(Prm_d,Pr_d)
+        st.write('Mutual Information:', MI_post)
 
     else: 
         st.write("Please upload data files on left")
