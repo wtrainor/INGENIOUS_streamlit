@@ -136,8 +136,8 @@ def optimal_bin(X_train, y_train):
     #st.write(X_train.iloc[0:5], X_train_np[0:3])
     grid.fit(X_train_np[:,None],y_train) # removed  [:,None],  .to_numpy() doesn't work np.reshape(,(-1,1)), y_train
     scores = grid.cv_results_['mean_test_score']
-    #st.write(grid.best_params_)
-    #st.write('accuracy =', grid.best_score_)
+    st.write(grid.best_params_)
+    st.write('accuracy =', grid.best_score_)
 
     return grid.best_params_
 
@@ -185,7 +185,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     kde_neg.fit(forkde_neg_np[:,np.newaxis])
     
     # nbins = 100
-    x_d = np.arange(min(X_train),max(X_train),best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
+    x_d = np.arange(min(X_train,X_test),max(X_train,X_test),best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
     nbins=len(x_d)
     st.write('max(X_train)-min(X_train)/nbins',max(X_train)-min(X_train)/nbins,'len(xd)=nbins', nbins)
 
