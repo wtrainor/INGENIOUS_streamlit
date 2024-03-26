@@ -184,9 +184,10 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     kde_pos.fit(forkde_pos_np[:,np.newaxis])
     kde_neg.fit(forkde_neg_np[:,np.newaxis])
     
-    nbins = 100
-    x_d = np.linspace(min(X_train), max(X_train), nbins) 
-    st.write(max(X_train)-min(X_train)/nbins)
+    # nbins = 100
+    x_d = np.arange(min(X_train),max(X_train),best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
+    nbins=len(x_d)
+    st.write('max(X_train)-min(X_train)/nbins',max(X_train)-min(X_train)/nbins)
 
     Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis]) #.score_samples
     Likelihood_logprob_neg = kde_neg.score_samples(x_d[:,np.newaxis])
