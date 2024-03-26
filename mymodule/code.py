@@ -187,7 +187,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     # nbins = 100
     x_d = np.arange(min(X_train),max(X_train),best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
     nbins=len(x_d)
-    st.write('max(X_train)-min(X_train)/nbins',max(X_train)-min(X_train)/nbins)
+    st.write('max(X_train)-min(X_train)/nbins',max(X_train)-min(X_train)/nbins,'len(xd)=nbins', nbins)
 
     Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis]) #.score_samples
     Likelihood_logprob_neg = kde_neg.score_samples(x_d[:,np.newaxis])
