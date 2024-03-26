@@ -606,7 +606,16 @@ def f_MI(Prm_d,Pr_d,*args):
     
     Pr_d : array_like, [len(x_sample) x 1]
         marginal probability, rows= data,
+
+    Output:
+        Mutual Information (MI) is an information theoretic measure that quantifies how dependent are the two labelings. 
+            Note that the maximum value of MI for perfect labelings depends on the number of clusters and samples;
+        Normalized Mutual Information (NMI), a Mutual Information defined between 0 (no mutual information) in the limit
+            of large number of data points and 1 (perfectly matching label assignments, up to a permutation of the labels). 
+            It is not adjusted for chance: then the number of clustered data points is not large enough, the expected values
+            of MI or NMI for random labelings can be significantly non-zero;
     """
     MI_post = metrics.mutual_info_score(Prm_d[:,0],Prm_d[:,1])
+    NMI_post = metrics.normalized_mutual_info_score(Prm_d[:,0],Prm_d[:,1])
 
-    return MI_post
+    return MI_post, NMI_post
