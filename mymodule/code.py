@@ -185,7 +185,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     kde_neg.fit(forkde_neg_np[:,np.newaxis])
     
     # nbins = 100
-    x_d = np.arange(np.min(X_train,X_test),np.max(X_train,X_test),best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
+    x_d = np.arange(np.min([X_train,X_test]),np.max([X_train,X_test]),best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
     nbins=len(x_d)
     st.write('max(X_train)-min(X_train)/nbins',max(X_train)-min(X_train)/nbins,'len(xd)=nbins', nbins)
 
