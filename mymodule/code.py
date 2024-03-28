@@ -140,7 +140,7 @@ def optimal_bin(X_train, y_train):
     st.write(grid.best_params_)
     st.write('accuracy =', grid.best_score_)
 
-    return grid.best_params_
+    return grid.best_params_,  grid.best_score_
 
 def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters):
     """
