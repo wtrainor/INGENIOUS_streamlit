@@ -249,6 +249,7 @@ if uploaded_files is not None:
         st.write('Normalized Mutual Information:', NMI_post)
         st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
         dataframe4clipboard = pd.DataFrame(data=np.hstack((VII_input,NMI_post,accuracy)))#,  columns=['VII','NMI','accuracy'])
+        st.write(dataframe4clipboard)
         dataframe4clipboard.to_clipboard(excel=True,index=False)
 
     else: 
