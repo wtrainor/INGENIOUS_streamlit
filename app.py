@@ -247,8 +247,8 @@ if uploaded_files is not None:
         MI_post, NMI_post = mymodule.f_MI(Prm_d_Input,Pr_InputMarg)
         st.write('Mutual Information:', MI_post)
         st.write('Normalized Mutual Information:', NMI_post)
-        st.write(best_params) #['bandwidth']
-        dataframe4clipboard = pd.DataFrame(data=np.concatenate(VII_input,MI_post,accuracy) )
+        st.write(accuracy,np.concatenate(VII_input,MI_post,accuracy)) #['bandwidth']
+        dataframe4clipboard = pd.DataFrame(data=(VII_input,MI_post,accuracy) )
         dataframe4clipboard.to_clipboard()
 
     else: 
