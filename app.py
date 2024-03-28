@@ -186,7 +186,7 @@ if uploaded_files is not None:
         # split up if we want to test bandwidth 
         X_train, X_test, y_train, y_test = mymodule.make_train_test(dfpair,x_cur,dfpairN)
  
-        best_params = mymodule.optimal_bin(X_train, y_train)
+        best_params, accuracy = mymodule.optimal_bin(X_train, y_train)
 
         # Likelihood via KDE estimate
         predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_params)
@@ -248,7 +248,7 @@ if uploaded_files is not None:
         st.write('Mutual Information:', MI_post)
         st.write('Normalized Mutual Information:', NMI_post)
         st.write(best_params) #['bandwidth']
-        dataframe4clipboard = pd.DataFrame(data=np.concatenate(VII_input,MI_post,best_params) )
+        dataframe4clipboard = pd.DataFrame(data=np.concatenate(VII_input,MI_post,accuracy) )
         dataframe4clipboard.to_clipboard()
 
     else: 
