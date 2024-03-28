@@ -13,20 +13,20 @@ authors:
   - name: Sierra Rosario (Author Without ORCID)
     equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
     affiliation: 2
-  - name: Author with no affiliation
-    corresponding: true # (This is how to denote the corresponding author)
-    affiliation: 3
-  - given-names: Ludwig
-    dropping-particle: van
-    surname: Beethoven
-    affiliation: 3
+  # - name: Author with no affiliation
+  #   corresponding: true # (This is how to denote the corresponding author)
+  #   affiliation: 3
+  # - given-names: Ludwig
+  #   dropping-particle: van
+  #   surname: Beethoven
+  #   affiliation: 3
 affiliations:
  - name: National Renewable Energy Laboratory, USA
    index: 1
  - name: Amherst University, USA
    index: 2
- - name: Independent Researcher, Country
-   index: 3
+#  - name: Independent Researcher, Country
+#    index: 3
 date: 13 August 2017
 bibliography: paper.bib
 
