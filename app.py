@@ -160,7 +160,9 @@ if uploaded_files is not None:
         st.write('dataframe is shape: {thesize}'.format(thesize=df_screenN.shape))
         #st.write('attribute stats ', df_screen[attribute0].describe())
 
-        distance_meters = st.slider('Change likelihood by *screening* distance to positive label [km or meters??]',10, int(np.max(df_screen['PosSite_Distance'])-10), 800, step=100) # min, max, default
+        neg_site_col_name = 'site_dist_nvml_neg_conus117_250m' #'NegSite_Distance'
+        distance_meters = st.slider('USING THIS!'+neg_site_col_name+' Change likelihood by *screening* distance to positive label [km or meters??]',
+                                    10, int(np.max(df_screen['PosSite_Distance'])-10), 800, step=100) # min, max, default
         # NEG_distance_meters = st.slider('Change likelihood by *screening* distance to negative label [km or meters??]', 
         #     10, int(np.max(df_screenN['NegSite_Di'])-10), int(np.median(df_screenN['NegSite_Di'])), step=1000)
 
@@ -169,10 +171,11 @@ if uploaded_files is not None:
         
         dfpair = dfpair0[dfpair0[x_cur]>-9999] 
         # # # OJO : may want to keep this off until have it for NEG 
-        dfpairN = df_screenN[(df_screenN['NegSite_Distance'] <=round(distance_meters,-1))] 
+        dfpairN = df_screenN[(df_screenN[neg_site_col_name ] <=round(distance_meters,-1))] 
+        
         if np.shape(dfpairN)[0]==0:
             st.write('using Q1 distance for Negative sites')
-            dfpairN = df_screenN[(df_screenN['NegSite_Distance'] <= np.percentile(df_screenN['NegSite_Distance'],10))] 
+            dfpairN = df_screenN[(df_screenN[neg_site_col_name ] <= np.percentile(df_screenN[neg_site_col_name ],10))] 
         
         st.subheader('Calculate & Display Likelihoods')
         st.write('We can compute this "empirical" likelihood with the counts of interpretations.')
