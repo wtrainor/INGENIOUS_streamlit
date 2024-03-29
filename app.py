@@ -160,7 +160,7 @@ if uploaded_files is not None:
         st.write('dataframe is shape: {thesize}'.format(thesize=df_screenN.shape))
         #st.write('attribute stats ', df_screen[attribute0].describe())
 
-        neg_site_col_name = 'site_dist_nvml_neg_conus117_250m' #'NegSite_Distance'
+        neg_site_col_name = 'tsite_dist_nvml_neg_conus117_250m' #'NegSite_Distance'
         distance_meters = st.slider('USING THIS!'+neg_site_col_name+' Change likelihood by *screening* distance to positive label [km or meters??]',
                                     10, int(np.max(df_screen['PosSite_Distance'])-10), 800, step=100) # min, max, default
         # NEG_distance_meters = st.slider('Change likelihood by *screening* distance to negative label [km or meters??]', 
