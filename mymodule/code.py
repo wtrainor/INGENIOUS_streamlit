@@ -285,7 +285,7 @@ def Prior_probability_binary(mykey=None): #x_sample, X_train,
     """    
 
     
-    Pr_POS = st.slider('Choose :blue[prior probability of success (odds in the geothermal lottery)]', float(0.00),float(1.0), float(0.1), float(0.01),key=mykey)
+    Pr_POS = st.slider('Choose :blue[Prior probability of successful geothermal well]', float(0.00),float(1.0), float(0.1), float(0.01),key=mykey)
 
     return Pr_POS 
 
