@@ -20,7 +20,7 @@ import mymodule
 # 3 Log into streamlit, and app is there...
 
 # PRIORS - > USER INPUT
-st.header('Should you enter the geothermal lottery without further information?')
+st.header('Probability of geothermal success given information available today?')
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
 Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
@@ -33,26 +33,28 @@ value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_p
 #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
 value_drill_DRYHOLE = np.linspace(100, -1e6,10)
 
-# NOT TRUE: This function can be called with multiple values of "dry hole"
-# vprior_INPUT_demo = mymodule.f_VPRIOR([1-Pr_prior_POS_demo[0],Pr_prior_POS_demo[0]], value_array, value_drill_DRYHOLE[-1])       
+## Find Min Max for the Vprior Demo plot
 vprior_INPUT_min = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[-1])  
 vprior_INPUT_max = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[0])   
 VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE[0])   
-# l2 = list(map(lambda v: v ** 2, l1))
+
+# Call f_VPRIOR over array value_drill_DRYHOLE
 vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
                                                               value_array,vv),value_drill_DRYHOLE))
-st.subheader('Yes if $V_{prior}$ is positive. $Pr(\Theta=Positive)$='+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
+st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
+st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
 st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
 
 showVperfect = st.checkbox('Show Vperfect')
 
 firstfig, ax = plt.subplots()
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
-plt.ylabel(r'Value [\$]',fontsize=14)
+plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
 plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
 #st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
-ax.text(np.min(value_drill_DRYHOLE), value_array[-1,-1]*0.7, r'$v_{a=Drill}(x=Positive) =$'+'\${:0,.0f}'.format(value_array[-1,-1]), 
+txtonplot = r'$v_{a=Drill}(\Theta=Positive) =$'
+ax.text(np.min(value_drill_DRYHOLE), value_array[-1,-1]*0.7, txtonplot+'\${:0,.0f}'.format(value_array[-1,-1]), 
         size=12, color='green',
          #va="baseline", ha="left", multialignment="left",
           horizontalalignment='left',
@@ -89,32 +91,35 @@ if showVperfect:
 with st.sidebar:
             
     # LOCATION OF THIS FILE (Carbonate Aquifer only to start?)
-    uploaded_files = st.file_uploader("Choose a POS :fire: & NEG :thumbsdown: file",type=['csv'],accept_multiple_files=True)
+    uploaded_files = st.file_uploader("Choose a Data with Positive Label file (\'POS_\' :fire:) & with Negative (\'NEG_\':thumbsdown:) file",type=['csv'],accept_multiple_files=True)
     st.write(len(uploaded_files))
 
     if uploaded_files is not None and len(uploaded_files)==2:
+        st.subheader('ML Nevada Data')
+        st.subheader('Choose attribute for VOI calculation')
+        
         for uploaded_file in uploaded_files:
             # bytes_data = uploaded_file.read()
             st.write("filename:", uploaded_file.name)
-            if uploaded_file.name[0:3]=='NEG':
+            if uploaded_file.name[0:3]=='POS':
+               pos_upload_file = uploaded_file
+               df = pd.read_csv(pos_upload_file)
+               attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
+               st.write('POS File summary...')
+               st.write(df.describe())
+
+            elif uploaded_file.name[0:3]=='NEG':
                 neg_upload_file = uploaded_file
                 dfN = pd.read_csv(neg_upload_file)
                 st.write('NEG File preview...')
                 st.write(dfN.describe())
-            elif uploaded_file.name[0:3]=='POS':
-                pos_upload_file = uploaded_file
-                df = pd.read_csv(pos_upload_file)
-                st.write('POS File summary...')
-                st.write(df.describe())
             else:
                 st.write('Dude, you didn\'t select a POS and NEG file, try again')
 
         if pos_upload_file.name[3:7] != neg_upload_file.name[3:7]:
                 st.write('You aren\'t comparing data from the same region. STOP!')
-        else:        
-            st.subheader('ML Nevada Data')
-            st.subheader('Choose attribute for VOI calculation')
-            attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
+        # else:        
+            
     # attribute0 = st.multiselect('What attributes would you like to calculate', df.columns,max_selections=2)
     
     # with st.echo(): # this prints out 
@@ -132,7 +137,7 @@ with st.sidebar:
 # uploaded_fileNEG = st.file_uploader("Choose a NEG file",type=['csv'])
 st.write('uploaded_files==None attribute0==None', uploaded_files==None)
 if uploaded_files is not None:
-    st.title('Domain Likelihoods: thresholding distances to labels')
+    
     # df = pd.read_csv(uploaded_file)
     # dfN = pd.read_csv(file_path+neg_upload_file)
     # st.subheader('ML Nevada Data')
@@ -142,7 +147,8 @@ if uploaded_files is not None:
     # st.write(df)
       
     if attribute0 is not None:
-        st.write('You picked this attribute ', attribute0)
+        st.title('You picked this attribute: '+attribute0)
+        st.write('Thresholding distances to labels')
 
         x_cur = attribute0
     
@@ -160,8 +166,8 @@ if uploaded_files is not None:
         st.write('dataframe is shape: {thesize}'.format(thesize=df_screenN.shape))
         #st.write('attribute stats ', df_screen[attribute0].describe())
 
-        neg_site_col_name = 'NegSite_Distance' # 'tsite_dist_nvml_neg_conus117_250m' #
-        distance_meters = st.slider('USING THIS!'+neg_site_col_name+' Change likelihood by *screening* distance to positive label [km or meters??]',
+        neg_site_col_name = 'NegSite_Distance' # I change the name when making csv 'tsite_dist_nvml_neg_conus117_250m' #
+        distance_meters = st.slider('!USING THIS! '+neg_site_col_name+' Change likelihood by *screening* distance to positive label [meters]',
                                     10, int(np.max(df_screen['PosSite_Distance'])-10), 800, step=100) # min, max, default
         # NEG_distance_meters = st.slider('Change likelihood by *screening* distance to negative label [km or meters??]', 
         #     10, int(np.max(df_screenN['NegSite_Di'])-10), int(np.median(df_screenN['NegSite_Di'])), step=1000)
