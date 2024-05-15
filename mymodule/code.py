@@ -142,7 +142,7 @@ def optimal_bin(X_train, y_train):
 
     return grid.best_params_,  grid.best_score_
 
-def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters):
+def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_parameters):
     """
     Smooth out likelihood function & PLOT using optimal bandwidth and return likelihood (positive & negative)
 
@@ -151,7 +151,6 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_parameters
     X_train : array-like [1 x 0.67*number samples] (67%)
     X_test : array-like [1 x 0.33*number samples]  (33%)
     x_cur : string, colummn name of attribute/data type being assessed
-    y_cur0 : 
     best_parameters : dictionary
     Output
     ---------
