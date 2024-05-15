@@ -139,14 +139,14 @@ if uploaded_files is not None:
 
         x_cur = attribute0
     
-        screen_att0 ='PosSite_Di'
-        screen_att1 ='NegSite_Di'
-        if any(df.columns.str.contains('GeodeticStrainRate')):
-            y_cur0 = 'GeodeticStrainRate'  # hard code for now will come from multiselect
-        elif any(df.columns.str.contains('geod_2ndinv_conus117_250m')):
-            y_cur0 = 'geod_2ndinv_conus117_250m'
-        else:
-            st.print('no know strain in df')
+        # screen_att0 ='PosSite_Di'
+        # screen_att1 ='NegSite_Di'
+        # if any(df.columns.str.contains('GeodeticStrainRate')):
+        #     y_cur0 = 'GeodeticStrainRate'  # hard code for now will come from multiselect
+        # elif any(df.columns.str.contains('geod_2ndinv_conus117_250m')):
+        #     y_cur0 = 'geod_2ndinv_conus117_250m'
+        # else:
+        #     st.print('no know strain in df')
 
         df_screen = df[df[x_cur]>-9999]
         df_screenN = dfN[dfN[x_cur]>-9999]
