@@ -122,11 +122,6 @@ with st.sidebar:
             
     # attribute0 = st.multiselect('What attributes would you like to calculate', df.columns,max_selections=2)
     
-    # with st.echo(): # this prints out 
-    # st.write("Update dry hole loss in sidebar.")
-    # number = st.number_input(r'''$v_{a=drill}(\theta=Negative)$''')
-    # st.write('The current number is ', number)
-
     #with st.spinner("Loading..."):
     #    time.sleep(5)
     #st.success("Done!")
@@ -137,15 +132,7 @@ with st.sidebar:
 # uploaded_fileNEG = st.file_uploader("Choose a NEG file",type=['csv'])
 st.write('uploaded_files==None attribute0==None', uploaded_files==None)
 if uploaded_files is not None:
-    
-    # df = pd.read_csv(uploaded_file)
-    # dfN = pd.read_csv(file_path+neg_upload_file)
-    # st.subheader('ML Nevada Data')
-    # st.write('File preview...')
-    # st.write(df.head())
-
-    # st.write(df)
-      
+             
     if attribute0 is not None:
         st.title('You picked this attribute: '+attribute0)
         st.write('Thresholding distances to labels')
