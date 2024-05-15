@@ -211,7 +211,8 @@ if uploaded_files is not None:
           
         st.write(':blue['+r'''$Pr(\Theta = \theta_i)$'''+'] in posterior')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
-        st.header(':point_down: :violet[Posterior]~:blue[Prior]:point_up_2: x Likelhood :arrow_heading_up:')
+        st.header('How much is this imperfect data worth?')
+        st.subheader(':point_down: :violet[Posterior]~:blue[Prior]:point_up_2: x Likelhood :arrow_heading_up:')
         
         # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
         post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
@@ -224,8 +225,7 @@ if uploaded_files is not None:
 
         # This function can be called with multiple values of "dry hole"
         vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
-        st.subheader('How much is this imperfect data worth?')
-               
+                       
         #st.subheader(r'''$V_{prior}$ '''+'${:0,.0f}'.format(vprior_unif_out).replace('$-','-$'))
 
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
