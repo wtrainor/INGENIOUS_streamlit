@@ -185,7 +185,7 @@ if uploaded_files is not None:
         best_params, accuracy = mymodule.optimal_bin(X_train, y_train)
 
         # Likelihood via KDE estimate
-        predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur,y_cur0, best_params)
+        predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_params)
 
         #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
         #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
