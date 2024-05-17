@@ -245,7 +245,7 @@ if uploaded_files is not None:
 
             ]    
         )
-        edited_df = st.data_editor(df)
+        edited_df = st.data_editor(newValuedf)
 
         # st.data_editor(value_array_df,
         #                column_config={
