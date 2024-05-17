@@ -107,8 +107,10 @@ with st.sidebar:
                attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
                st.write('POS File summary...')
                st.write(df.describe())
+            else:
+                st.write('Dude, you didn\'t select a POS and NEG file, try again')
 
-            elif uploaded_file.name[0:3]=='NEG':
+            if uploaded_file.name[0:3]=='NEG':
                 neg_upload_file = uploaded_file
                 dfN = pd.read_csv(neg_upload_file)
                 st.write('NEG File preview...')
