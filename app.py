@@ -107,7 +107,7 @@ with st.sidebar:
                st.write('POS File summary...')
                st.write(df.describe())
             else:
-                st.write('Dude, you didn\'t select a POS and NEG file, try again')
+                st.write('You didn\'t select a POS file, try again')
 
             if uploaded_file.name[0:3]=='NEG':
                 neg_upload_file = uploaded_file
@@ -116,14 +116,14 @@ with st.sidebar:
                 st.write('NEG File preview...')
                 st.write(dfN.describe())
             else:
-                st.write('Dude, you didn\'t select a POS and NEG file, try again')
+                st.write('You didn\'t select a NEG file, try again') 
+        
 
         if pos_upload_file.name[3:7] != neg_upload_file.name[3:7]:
                 st.write('You aren\'t comparing data from the same region. STOP!')
         # else:        
-            
-    # attribute0 = st.multiselect('What attributes would you like to calculate', df.columns,max_selections=2)
-    
+           
+        
     #with st.spinner("Loading..."):
     #    time.sleep(5)
     #st.success("Done!")
@@ -237,11 +237,28 @@ if uploaded_files is not None:
             \frac{Pr(\Theta = \theta_i ) \color{black} Pr( X=x_j | \Theta = \theta_i )}{\color{orange} Pr (X=x_j)} 
             ''')
         
+        st.write('Using these $v_a(\Theta)$',value_array_df)
+        st.data_editor(
+            value_array_df,
+            column_config={
+                "positive": st.column_config.NumberColumn(
+                    "Price (in USD)",
+                    help="Change the profit in USD",
+                    min_value=-1e12,
+                    max_value=1e12,
+                    step=1e3,
+                    format="$%d",
+                )
+            },
+            hide_index=True,
+        )
+
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
         st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
         st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
-        st.write('Using these $v_a(\Theta)$',value_array_df)
+        
+
         MI_post, NMI_post = mymodule.f_MI(Prm_d_Input,Pr_InputMarg)
         st.write('Mutual Information:', MI_post)
         st.write('Normalized Mutual Information:', NMI_post)
