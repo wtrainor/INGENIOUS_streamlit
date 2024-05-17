@@ -112,7 +112,7 @@ with st.sidebar:
             if uploaded_file.name[0:3]=='NEG':
                 neg_upload_file = uploaded_file
                 dfN = pd.read_csv(neg_upload_file)
-                attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
+                attribute0 = st.selectbox('What attributes would you like to calculate', dfN.columns) 
                 st.write('NEG File preview...')
                 st.write(dfN.describe())
             else:
