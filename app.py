@@ -238,20 +238,28 @@ if uploaded_files is not None:
             ''')
         
         st.write('Using these $v_a(\Theta)$',value_array_df)
-        st.data_editor(
-            value_array_df,
-            column_config={
-                "positive": st.column_config.NumberColumn(
-                    "Price (in USD)",
-                    help="Change the profit in USD",
-                    min_value=-1e12,
-                    max_value=1e12,
-                    step=1e3,
-                    format="$%d",
-                )
-            },
-            hide_index=True,
+        newValuedf = pd.DataFrame(
+            [
+                {"negative": 11, "positive": value_array_df.iloc[0,1]},
+                {"negative": value_array_df.iloc[1,0], "positive": value_array_df.iloc[1,1]},
+
+            ]    
         )
+        edited_df = st.data_editor(df)
+
+        # st.data_editor(value_array_df,
+        #                column_config={
+        #                "positive": st.column_config.NumberColumn(
+        #                 "Price (in USD)",
+        #                 help="Change the profit in USD",
+        #                 min_value=-1e12,
+        #                 max_value=1e12,
+        #                 step=1e3,
+        #                 format="$%d",
+        #                 )
+        #             },
+        #     hide_index=True,
+        # )
 
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
         st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
