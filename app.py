@@ -243,12 +243,14 @@ if uploaded_files is not None:
         st.write('Using these $v_a(\Theta)$',value_array_df)
         newValuedf = pd.DataFrame(
             [
-                {"negative": 11, "positive": value_array_df.iloc[0,1]},
-                {"negative": value_array_df.iloc[1,0], "positive": value_array_df.iloc[1,1]},
+                {"negative": 0, "positive": value_array_df.iloc[0,1]},
+                {"negative": value_array_df.iloc[1,0]*10, "positive": value_array_df.iloc[1,1]*10},
 
             ]    
         )
+        st.write('\color{purple} Code to be written to input these values')
         edited_df = st.data_editor(newValuedf)
+
 
         # st.data_editor(value_array_df,
         #                column_config={
@@ -275,8 +277,8 @@ if uploaded_files is not None:
         st.write('Normalized Mutual Information:', NMI_post)
         st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
         dataframe4clipboard = pd.DataFrame([[VII_input,NMI_post,accuracy]])#,  columns=['VII','NMI','accuracy'])
-        st.write(dataframe4clipboard)
-        dataframe4clipboard.to_clipboard(excel=True,index=False)
+        #st.write(dataframe4clipboard)
+       #dataframe4clipboard.to_clipboard(excel=True,index=False)
 
     else: 
         st.write("Please upload data files on left")
