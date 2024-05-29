@@ -248,7 +248,8 @@ if uploaded_files is not None:
 
             ]    
         )
-        st.write('\color{purple} Code to be written to input these values')
+        original_title = '<p style="font-family:Courier; color:Purple; font-size: 30px;"> Code to be written to input these values</p>'
+        st.markdown(original_title, unsafe_allow_html=True)
         edited_df = st.data_editor(newValuedf)
 
 
