@@ -104,7 +104,7 @@ with st.sidebar:
             if uploaded_file.name[0:3]=='POS':
                pos_upload_file = uploaded_file
                df = pd.read_csv(pos_upload_file)
-               print('attribute0 is None',attribute0==None)
+               st.write('attribute0 is None',attribute0==None, not attribute0)
                if not attribute0:
                     attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
                st.write('POS File summary...')
