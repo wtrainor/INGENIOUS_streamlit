@@ -249,8 +249,10 @@ if uploaded_files is not None:
 
             ]    
         )
-        newValuedf.set_index(['negative','positive'])
-        
+        list = ['do nothing','drill']
+        idx= pd.Index(list)
+        newValuedf.set_index(idx)
+
         original_title = '<p style="font-family:Courier; color:Pink; font-size: 30px;"> Code to be written to input these values</p>'
         st.markdown(original_title, unsafe_allow_html=True)
         edited_df = st.data_editor(newValuedf)
