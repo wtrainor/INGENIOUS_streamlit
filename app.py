@@ -102,31 +102,30 @@ with st.sidebar:
             # bytes_data = uploaded_file.read()
             st.write("filename:", uploaded_file.name)
             if uploaded_file.name[0:3]=='POS':
-               pos_upload_file = uploaded_file
-               df = pd.read_csv(pos_upload_file)
-               st.write('attribute0 is None',attribute0==None, not attribute0)
-               if not attribute0:
-                    attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
-               st.write('POS File summary...')
-               st.write(df.describe())
+                pos_upload_file = uploaded_file
+                df = pd.read_csv(pos_upload_file)
+            #    st.write('attribute0 is None',attribute0==None, not attribute0)
+            #    if not attribute0:
+                attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
+
             else:
                 st.write('You didn\'t select a POS file, try again')
 
             if uploaded_file.name[0:3]=='NEG':
                 neg_upload_file = uploaded_file
                 dfN = pd.read_csv(neg_upload_file)
-                if not attribute0:
-                    attribute0 = st.selectbox('What attributes would you like to calculate', dfN.columns) 
-                st.write('NEG File preview...')
-                st.write(dfN.describe())
+                            
             else:
                 st.write('You didn\'t select a NEG file, try again') 
         
 
         if pos_upload_file.name[3:7] != neg_upload_file.name[3:7]:
                 st.write('You aren\'t comparing data from the same region. STOP!')
-        # else:        
-           
+        else:        
+            st.write('POS File summary...')
+            st.write(df.describe())        
+            st.write('NEG File preview...')
+            st.write(dfN.describe())   
         
     #with st.spinner("Loading..."):
     #    time.sleep(5)
