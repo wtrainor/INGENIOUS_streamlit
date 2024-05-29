@@ -246,8 +246,11 @@ if uploaded_files is not None:
                 {"negative": 0, "positive": value_array_df.iloc[0,1]},
                 {"negative": value_array_df.iloc[1,0]*10, "positive": value_array_df.iloc[1,1]*10},
 
+
             ]    
         )
+        newValuedf.set_index(['negative','positive'])
+        
         original_title = '<p style="font-family:Courier; color:Pink; font-size: 30px;"> Code to be written to input these values</p>'
         st.markdown(original_title, unsafe_allow_html=True)
         edited_df = st.data_editor(newValuedf)
