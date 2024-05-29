@@ -241,15 +241,13 @@ if uploaded_files is not None:
             ''')
         
         st.write('Using these $v_a(\Theta)$',value_array_df)
-        newValuedf = pd.DataFrame(
-            [   {"action": 'do nothing', "action": 'drill'},
-                {"negative": 0, "positive": value_array_df.iloc[0,1]},
-                {"negative": value_array_df.iloc[1,0]*10, "positive": value_array_df.iloc[1,1]*10},
-
-
-            ]    
+        newValuedf = pd.DataFrame({
+               "action": ['do nothing','drill'],
+                "negative": [0, value_array_df.iloc[1,0]*10],
+                "positive": [0,value_array_df.iloc[1,1]*10]}
+            
         )
-        # list = ['do nothing','drill']
+        # list = 
         # idx= pd.Index(list)
         # newValuedf.set_index(idx)
 
