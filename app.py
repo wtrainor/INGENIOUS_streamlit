@@ -249,9 +249,9 @@ if uploaded_files is not None:
 
             ]    
         )
-        list = ['do nothing','drill']
-        idx= pd.Index(list)
-        newValuedf.set_index(idx)
+        # list = ['do nothing','drill']
+        # idx= pd.Index(list)
+        # newValuedf.set_index(idx)
 
         original_title = '<p style="font-family:Courier; color:Pink; font-size: 30px;"> Code to be written to input these values</p>'
         st.markdown(original_title, unsafe_allow_html=True)
