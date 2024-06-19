@@ -240,18 +240,19 @@ if uploaded_files is not None:
             \frac{Pr(\Theta = \theta_i ) \color{black} Pr( X=x_j | \Theta = \theta_i )}{\color{orange} Pr (X=x_j)} 
             ''')
         
-        st.write('Using these $v_a(\Theta)$',value_array_df)
-        newValuedf = pd.DataFrame({
-               "action": ['do nothing','drill'],
-                "negative": [0, value_array_df.iloc[1,0]*10],
-                "positive": [0,value_array_df.iloc[1,1]*10]}
+        # st.write('Using these $v_a(\Theta)$',value_array_df)
+        # newValuedf = pd.DataFrame({
+        #        "action": ['do nothing','drill'],
+        #         "negative": [0, value_array_df.iloc[1,0]*10],
+        #         "positive": [0,value_array_df.iloc[1,1]*10]}
             
         )
         # list = 
         # idx= pd.Index(list)
         # newValuedf.set_index(idx)
 
-        original_title = '<p style="font-family:Courier; color:Pink; font-size: 30px;"> Code to be written to input these values</p>'
+        # Code to be written to input these values
+        original_title = '<p style="font-family:Courier; color:Pink; font-size: 30px;"> Enter economic values for your decision</p>'
         st.markdown(original_title, unsafe_allow_html=True)
         edited_df = st.data_editor(newValuedf,hide_index=True)
 
