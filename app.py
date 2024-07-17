@@ -243,19 +243,23 @@ if uploaded_files is not None:
         # st.write('Using these $v_a(\Theta)$',value_array_df)
         newValuedf = pd.DataFrame({
                "action": ['do nothing','drill'],
-                "negative": [0, value_array_df.iloc[1,0]*10],
-                "positive": [0,value_array_df.iloc[1,1]*10]}   
+                "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
+                "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
         )
 
         # list = 
         # idx= pd.Index(list)
         # newValuedf.set_index(idx)
+        newValuedf.style.set_properties(**{'font-size': '35pt'}) # this doesn't seem to work
+        #bigdf.style.background_gradient(cmap, axis=1)\
 
         # Code to be written to input these values
-        original_title = '<p style="font-family:Courier; color:Pink; font-size: 30px;"> Enter economic values for your decision</p>'
+        original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
         st.markdown(original_title, unsafe_allow_html=True)
-        edited_df = st.data_editor(newValuedf,hide_index=True)
-
+        edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
+        
+        
+    
 
         # st.data_editor(value_array_df,
         #                column_config={
