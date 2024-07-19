@@ -20,7 +20,7 @@ import mymodule
 # 3 Log into streamlit, and app is there...
 
 # PRIORS - > USER INPUT
-st.header('Probability of geothermal success given information available today?')
+st.header('Interactive Demonstration of Relationship between Value of Information and Prior Value')
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
 Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
@@ -89,34 +89,45 @@ if showVperfect:
 
 
 with st.sidebar:
-            
+    attribute0 = None        
     # LOCATION OF THIS FILE 
     uploaded_files = st.file_uploader("Choose a Data with Positive Label file (\'POS_\' :fire:) & with Negative (\'NEG_\':thumbsdown:) file",type=['csv'],accept_multiple_files=True)
     st.write(len(uploaded_files))
-
+    count_neg= 0
+    count_pos = 0
     if uploaded_files is not None and len(uploaded_files)==2:
+        st.header('VOI APP')
         st.subheader('ML Nevada Data')
         st.subheader('Choose attribute for VOI calculation')
         
         for uploaded_file in uploaded_files:
             # bytes_data = uploaded_file.read()
             st.write("filename:", uploaded_file.name)
-            if uploaded_file.name[0:3]=='POS':
-                pos_upload_file = uploaded_file
-                df = pd.read_csv(pos_upload_file)
-            #    st.write('attribute0 is None',attribute0==None, not attribute0)
-            #    if not attribute0:
-                attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
-
+            if (uploaded_file.name[0:3]=='POS') :
+                if ( count_pos == 1):
+                    st.write('You didn\'t select a NEG file, try again')
+                else:
+                    pos_upload_file = uploaded_file
+                    df = pd.read_csv(pos_upload_file)
+            #       st.write('attribute0 is None',attribute0==None, not attribute0)
+            #       if not attribute0:
+                    attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
+                    count_pos = count_pos + 1
+            
+            elif (uploaded_file.name[0:3]=='NEG'):
+                if ( count_neg == 1):
+                    st.write('You didn\'t select a POS file, try again')
+                else:
+                    neg_upload_file = uploaded_file
+                    dfN = pd.read_csv(neg_upload_file)
+                    count_neg = count_neg + 1       
             else:
-                st.write('You didn\'t select a POS file, try again')
+                if ( uploaded_file.name[0:3] == 'NEG'):
+                    st.write('You didn\'t select a POS file, try again')
+                else:
+                    st.write('You didn\'t select a NEG file, try again')
 
-            if uploaded_file.name[0:3]=='NEG':
-                neg_upload_file = uploaded_file
-                dfN = pd.read_csv(neg_upload_file)
-                            
-            else:
-                st.write('You didn\'t select a NEG file, try again') 
+                
         
 
         if pos_upload_file.name[3:7] != neg_upload_file.name[3:7]:
@@ -208,8 +219,27 @@ if uploaded_files is not None:
         
         # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
         post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
+        newValuedf = pd.DataFrame({
+               "action": ['do nothing','drill'],
+                "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
+                "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
+        )
 
-        value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
+        # list = 
+        # idx= pd.Index(list)
+        # newValuedf.set_index(idx)
+        newValuedf.style.set_properties(**{'font-size': '35pt'}) # this doesn't seem to work
+        #bigdf.style.background_gradient(cmap, axis=1)\
+
+        # Code to be written to input these values
+        original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
+        st.markdown(original_title, unsafe_allow_html=True)
+        edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
+
+        pos = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
+        neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
+
+        value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos, cost_drill_neg = neg) # Karthik Changed here to reflect new values
         #st.write('value_array', value_array)
 
         #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
@@ -237,44 +267,39 @@ if uploaded_files is not None:
         VII_unifPrior = mymodule.f_VIMPERFECT(Prm_d_Uniform, value_array, Pr_UnifMarg)
         
         st.latex(r'''\color{purple} Pr( \Theta = \theta_i | X =x_j ) = \color{blue}
-            \frac{Pr(\Theta = \theta_i ) \color{black} Pr( X=x_j | \Theta = \theta_i )}{\color{orange} Pr (X=x_j)} 
-            ''')
+        \frac{Pr(\Theta = \theta_i ) \color{black} Pr( X=x_j | \Theta = \theta_i )}{\color{orange} Pr (X=x_j)}''')
         
         # st.write('Using these $v_a(\Theta)$',value_array_df)
-        newValuedf = pd.DataFrame({
-               "action": ['do nothing','drill'],
-                "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
-                "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
-        )
-
+        
         # list = 
         # idx= pd.Index(list)
         # newValuedf.set_index(idx)
-        newValuedf.style.set_properties(**{'font-size': '35pt'}) # this doesn't seem to work
+        #newValuedf.style.set_properties(**{'font-size': '35pt'}) # this doesn't seem to work
         #bigdf.style.background_gradient(cmap, axis=1)\
 
         # Code to be written to input these values
-        original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
-        st.markdown(original_title, unsafe_allow_html=True)
-        edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
+        #original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
+        #st.markdown(original_title, unsafe_allow_html=True)
+        #edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
+
         
         
     
-
-        # st.data_editor(value_array_df,
-        #                column_config={
-        #                "positive": st.column_config.NumberColumn(
-        #                 "Price (in USD)",
-        #                 help="Change the profit in USD",
-        #                 min_value=-1e12,
-        #                 max_value=1e12,
-        #                 step=1e3,
-        #                 format="$%d",
-        #                 )
-        #             },
-        #     hide_index=True,
-        # )
-
+        
+        #st.data_editor(value_array_df,
+                         #column_config={
+                        #"positive": st.column_config.NumberColumn(
+                         #"Price (in USD)",
+                         #help="Change the profit in USD",
+                         #min_value=-1e12,
+                         #max_value=1e12,
+                         #step=1e3,
+                         #format="$%d",
+                         #)
+                     #},
+             #hide_index=True,
+         #)
+        
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
         st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
