@@ -20,7 +20,7 @@ import mymodule
 # 3 Log into streamlit, and app is there...
 
 # PRIORS - > USER INPUT
-st.header('Interactive Demonstration of Relationship between Value of Information and Prior Value')
+st.header('TEST Interactive Demonstration of Relationship between Value of Information and Prior Value')
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
 Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
