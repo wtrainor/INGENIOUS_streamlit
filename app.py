@@ -52,8 +52,8 @@ plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$
 plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
 plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
 
-st.write(r'''$\Theta =  Outcome \ under \ consideration $''')
-st.write(r'''$\theta_i =  ith \ possible\ outcome $''')
+st.write(r'''$\Theta =  Uncertainty geologic parameter (decision variable) $''')
+st.write(r'''$\theta_i =  ith \ possible\ geologic states $''')
 st.write(r'''$a =  Action \ being \ taken $''')
 st.write(r'''$i =  Outcome \ index $''')
 st.write(r'''$V_{prior} =  Prior\ Probability \ of \ Outcome \ under \ consideration \ for \ a \ given \ Feature\  $''')
