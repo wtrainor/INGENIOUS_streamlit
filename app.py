@@ -74,6 +74,14 @@ ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('{x:0,.0f}')
 st.pyplot(firstfig)
 st.write(r'''$\Theta =  Uncertain \ geologic \ parameter \ (decision \ variable) $''')
+<<<<<<< Updated upstream
+=======
+plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
+plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
+plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
+
+st.write(r'''$\Theta =  Uncertain \ geologic \ parameter $''')
+>>>>>>> Stashed changes
 st.write(r'''$\theta_i =  ith \ possible\ geologic \ state $''')
 st.write(r'''$a =  Action \ being \ taken $''')
 st.write(r'''$i =  Outcome \ index $''')
