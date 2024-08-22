@@ -5,6 +5,7 @@ import time
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 import os
+from PIL import Image
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 # import babel.numbers
 # import decimal
@@ -12,6 +13,8 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 #locale.setlocale( locale.LC_ALL, '' )
 
 import mymodule
+#import Bayesian_Modeling, Bayesian_Outputs, data_extraction, Naive_Bayes
+#from mymodule import Naive_Bayes
 
 #arr = mymodule.make_data()
 
@@ -22,21 +25,27 @@ import mymodule
 # PRIORS - > USER INPUT
 st.header('Interactive Demonstration of Relationship between Value of Information and Prior Value')
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
+#Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
 #### start of paste  -> CHANGE to input
-count_ij = np.zeros((2,10))
-value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 1e6, cost_drill_neg = -1e6)
+count_ij = np.zeros((2,6))
+value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 15e6, cost_drill_neg = -1e6)
 # # st.write('value_array', value_array)
 
 ## Calculate Vprior
 #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
-value_drill_DRYHOLE = np.linspace(100, -1e6,10)
+#value_drill_DRYHOLE = np.linspace(100, -1e6,10)
+#Assigning values that match GEOPHIRES drilling costs.
+value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
+#value_drill_DRYHOLE = np.array([10.4e6, 7.9e6, 5.81e6, 4.11e6, 2.8e6, 1.9e6])
 
 ## Find Min Max for the Vprior Demo plot
 vprior_INPUT_min = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[-1])  
 vprior_INPUT_max = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[0])   
-VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE[0])   
+VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE[0])  
+
+
 
 # Call f_VPRIOR over array value_drill_DRYHOLE
 vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
@@ -45,20 +54,51 @@ st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr
 st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
 st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
 
-showVperfect = st.checkbox('Show Vperfect')
+image = Image.open("C:\\Users\\kmenon\\Pictures\\Screenshots\\VOI-app-geophires-input.png")
+st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
 
+
+
+vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
+value_drill_pos = value_drill_DRYHOLE*-1
 firstfig, ax = plt.subplots()
-plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
-plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
-plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
+#firstfig1, axe = plt.subplots(1,2)
+plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
+plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
+plt.xlabel('Depth (m)', color='darkred',fontsize=14)
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# ax.yaxis.set_major_formatter(formatter)
+ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
+ax.xaxis.set_major_formatter(formatter)
+ax.xaxis.set_major_formatter('{x:0,.0f}')
 
-st.write(r'''$\Theta =  Outcome \ under \ consideration $''')
-st.write(r'''$\theta_i =  ith \ possible\ outcome $''')
+st.pyplot(firstfig)
+
+
+
+st.write(r'''$\Theta =  Uncertain \ geological \ parameter $''')
+st.write(r'''$\theta_i =  ith \ possible\ geologic \ state $''')
 st.write(r'''$a =  Action \ being \ taken $''')
 st.write(r'''$i =  Outcome \ index $''')
 st.write(r'''$V_{prior} =  Prior\ Probability \ of \ Outcome \ under \ consideration \ for \ a \ given \ Feature\  $''')
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
 #st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
+
+
+
+
+showVperfect = st.checkbox('Show Vperfect')
+
+firstfig1, ax = plt.subplots()
+vprior_depth2 = np.array([6000,5000,4000,3000,2000,1000])
+plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list, 'g.-', linewidth=5,label='$V_{prior}$')
+
+plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
+plt.xlabel('Well Drilling Cost ($)', color='darkred',fontsize=14)
+
+
+
 txtonplot = r'$v_{a=Drill}(\Theta=Positive) =$'
 ax.text(np.min(value_drill_DRYHOLE), value_array[-1,-1]*0.7, txtonplot+'\${:0,.0f}'.format(value_array[-1,-1]), 
         size=12, color='green',
@@ -85,7 +125,49 @@ formatter.set_scientific(False)
 ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('${x:0,.0f}')
-st.pyplot(firstfig)
+
+
+#st.pyplot(firstfig1)
+
+
+
+# Plotting Depth vs Value of Information
+#showVperfect2 = st.checkbox('Show Vperfect')
+firstfig2, ax = plt.subplots()
+
+
+
+vprior_depth2 = np.array([6000,5000,4000,3000,2000,1000])
+plt.plot(vprior_depth, vprior_INPUT_demo_list, 'g.-', linewidth=5,label='$V_{prior}$')
+plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
+plt.xlabel('Well Depth (m)', color='darkred',fontsize=14)
+
+txtonplot = r'$v_{a=Drill}(\Theta=Positive) =$'
+ax.text(np.min(vprior_depth), value_array[-1,-1]*0.7, txtonplot+'\${:0,.0f}'.format(value_array[-1,-1]), 
+        size=12, color='green',
+         #va="baseline", ha="left", multialignment="left",
+          horizontalalignment='left',
+         verticalalignment='top')#, bbox=dict(fc="none"))
+
+
+if showVperfect:  
+    VPIlist = list(map(lambda uu: mymodule.Vperfect(Pr_prior_POS_demo, value_array,uu),value_drill_DRYHOLE))
+    # st.write('VPI',np.array(VPIlist),vprior_INPUT_demo_list)
+    VOIperfect = np.maximum((np.array(VPIlist)-np.array(vprior_INPUT_demo_list)),np.zeros(len(vprior_INPUT_demo_list)))
+    # VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
+    ax.plot(vprior_depth,VPIlist,'b', linewidth=5, alpha=0.5, label='$V_{perfect}$')
+    ax.plot(vprior_depth,VOIperfect,'b--', label='$VOI_{perfect}$')
+
+plt.legend(loc=1)
+plt.ylim([vprior_INPUT_min,value_array[-1,-1]*0.8]) # YLIM was (VPI_max+20)
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# ax.yaxis.set_major_formatter(formatter)
+ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
+ax.xaxis.set_major_formatter(formatter)
+ax.xaxis.set_major_formatter('{x:0,.0f}')
+
+st.pyplot(firstfig2)
 
 if showVperfect:  
     
