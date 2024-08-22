@@ -73,7 +73,7 @@ ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('{x:0,.0f}')
 
-st.write(r'''$\Theta =  Uncertainty geologic parameter (decision variable) $''')
+st.write(r'''$\Theta =  Uncertain \ geologic \ parameter \ (decision \ variable) $''')
 st.write(r'''$\theta_i =  ith \ possible\ geologic states $''')
 st.write(r'''$a =  Action \ being \ taken $''')
 st.write(r'''$i =  Outcome \ index $''')
