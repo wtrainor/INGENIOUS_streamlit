@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib import ticker
 import os
 from PIL import Image
+import requests
+from io import BytesIO
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 # import babel.numbers
 # import decimal
@@ -54,7 +56,15 @@ st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr
 st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
 st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
 
-image = Image.open("C:\\Users\\kmenon\\Pictures\\Screenshots\\VOI-app-geophires-input.png")
+
+
+
+url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/VOI-app-geophires-input.png'
+
+response = requests.get(url)
+image= Image.open(BytesIO(response.content))
+
+#image = Image.open("C:\\Users\\kmenon\\Pictures\\Screenshots\\VOI-app-geophires-input.png")
 st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
 
 
