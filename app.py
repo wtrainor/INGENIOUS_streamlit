@@ -26,8 +26,37 @@ import mymodule
 
 # PRIORS - > USER INPUT
 st.header('Interactive Demonstration of Relationship between Value of Information and Prior Value')
+
+## Drilling cost Figures
+url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/VOI-app-geophires-input.png'
+
+response = requests.get(url)
+image= Image.open(BytesIO(response.content))
+
+#image = Image.open("C:\\Users\\kmenon\\Pictures\\Screenshots\\VOI-app-geophires-input.png")
+st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
+
+
+
+vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
+value_drill_pos = value_drill_DRYHOLE*-1
+firstfig, ax = plt.subplots()
+#firstfig1, axe = plt.subplots(1,2)
+plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
+plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
+plt.xlabel('Depth (m)', color='darkred',fontsize=14)
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# ax.yaxis.set_major_formatter(formatter)
+ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
+ax.xaxis.set_major_formatter(formatter)
+ax.xaxis.set_major_formatter('{x:0,.0f}')
+st.pyplot(firstfig)
+
+
+
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
-#Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
+
 Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
 #### start of paste  -> CHANGE to input
@@ -55,34 +84,6 @@ vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_d
 st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
 st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
 st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
-
-
-
-
-url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/VOI-app-geophires-input.png'
-
-response = requests.get(url)
-image= Image.open(BytesIO(response.content))
-
-#image = Image.open("C:\\Users\\kmenon\\Pictures\\Screenshots\\VOI-app-geophires-input.png")
-st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
-
-
-
-vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
-value_drill_pos = value_drill_DRYHOLE*-1
-firstfig, ax = plt.subplots()
-#firstfig1, axe = plt.subplots(1,2)
-plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
-plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
-plt.xlabel('Depth (m)', color='darkred',fontsize=14)
-formatter = ticker.ScalarFormatter()
-formatter.set_scientific(False)
-# ax.yaxis.set_major_formatter(formatter)
-ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
-ax.xaxis.set_major_formatter(formatter)
-ax.xaxis.set_major_formatter('{x:0,.0f}')
-st.pyplot(firstfig)
 
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
