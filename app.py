@@ -37,20 +37,6 @@ st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
 #Code below plots the drilling cost vs depth
 vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
 
-
-firstfig, ax = plt.subplots()
-#firstfig1, axe = plt.subplots(1,2)
-plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
-plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
-plt.xlabel('Depth (m)', color='darkred',fontsize=14)
-formatter = ticker.ScalarFormatter()
-formatter.set_scientific(False)
-# ax.yaxis.set_major_formatter(formatter)
-ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
-ax.xaxis.set_major_formatter(formatter)
-ax.xaxis.set_major_formatter('{x:0,.0f}')
-st.pyplot(firstfig)
-
 #### start of paste  -> CHANGE to input
 count_ij = np.zeros((2,6))
 value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 15e6, cost_drill_neg = -1e6)
@@ -64,6 +50,19 @@ value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e
 #value_drill_DRYHOLE = np.array([10.4e6, 7.9e6, 5.81e6, 4.11e6, 2.8e6, 1.9e6])
 #Assigning values that match GEOPHIRES drilling costs.
 value_drill_pos = value_drill_DRYHOLE*-1
+
+firstfig, ax = plt.subplots()
+#firstfig1, axe = plt.subplots(1,2)
+plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
+plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
+plt.xlabel('Depth (m)', color='darkred',fontsize=14)
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# ax.yaxis.set_major_formatter(formatter)
+ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
+ax.xaxis.set_major_formatter(formatter)
+ax.xaxis.set_major_formatter('{x:0,.0f}')
+st.pyplot(firstfig)
 
 # Prior Probability SLIDER here
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
