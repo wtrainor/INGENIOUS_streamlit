@@ -27,37 +27,13 @@ import mymodule
 # PRIORS - > USER INPUT
 st.header('Interactive Demonstration of Relationship between Value of Information and Prior Value')
 
-## Drilling cost Figures
 url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/VOI-app-geophires-input.png'
 
 response = requests.get(url)
 image= Image.open(BytesIO(response.content))
 
-#image = Image.open("C:\\Users\\kmenon\\Pictures\\Screenshots\\VOI-app-geophires-input.png")
+#Code below plots the GEOPHIRES params from kmenon's github
 st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
-
-
-
-vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
-value_drill_pos = value_drill_DRYHOLE*-1
-firstfig, ax = plt.subplots()
-#firstfig1, axe = plt.subplots(1,2)
-plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
-plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
-plt.xlabel('Depth (m)', color='darkred',fontsize=14)
-formatter = ticker.ScalarFormatter()
-formatter.set_scientific(False)
-# ax.yaxis.set_major_formatter(formatter)
-ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
-ax.xaxis.set_major_formatter(formatter)
-ax.xaxis.set_major_formatter('{x:0,.0f}')
-st.pyplot(firstfig)
-
-
-
-#st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
-
-Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
 #### start of paste  -> CHANGE to input
 count_ij = np.zeros((2,6))
@@ -76,15 +52,40 @@ vprior_INPUT_min = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE
 vprior_INPUT_max = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[0])   
 VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE[0])  
 
-
-
 # Call f_VPRIOR over array value_drill_DRYHOLE
+#st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
+
+Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
+
 vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
                                                               value_array,vv),value_drill_DRYHOLE))
 st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
 st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
 st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
 
+
+
+
+
+
+vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
+value_drill_pos = value_drill_DRYHOLE*-1
+firstfig, ax = plt.subplots()
+#firstfig1, axe = plt.subplots(1,2)
+plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
+plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
+plt.xlabel('Depth (m)', color='darkred',fontsize=14)
+formatter = ticker.ScalarFormatter()
+formatter.set_scientific(False)
+# ax.yaxis.set_major_formatter(formatter)
+ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
+ax.xaxis.set_major_formatter(formatter)
+ax.xaxis.set_major_formatter('{x:0,.0f}')
+
+#Code below plots the drilling cost vs depth
+st.pyplot(firstfig)
+
+>>>>>>> origin/Karthik
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
 plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
@@ -97,59 +98,44 @@ st.write(r'''$V_{prior} =  Prior\ Probability \ of \ Outcome \ under \ considera
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
 #st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
 
+# Code for table with decision outcomes defined by the user.
+
+newValuedf1 = pd.DataFrame({
+               "action": ['do nothing','drill'],
+                "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
+                "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
+        )
+
+# list = 
+# idx= pd.Index(list)
+# newValuedf.set_index(idx)
+newValuedf1.style.set_properties(**{'font-size': '35pt'}) # this doesn't seem to work
+ #bigdf.style.background_gradient(cmap, axis=1)\
+
+# Code to input these values
+original_title = '<p style="font-family:Courier; color:Black; font-size: 30px;"> Enter economic values for your decision</p>'
+st.markdown(original_title, unsafe_allow_html=True)
+edited_df = st.data_editor(newValuedf1,hide_index=True,use_container_width=True)
+
+pos = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
+neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
+value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos, cost_drill_neg = neg)
 
 
-
+# Plotting VOI
 showVperfect = st.checkbox('Show Vperfect')
 
-firstfig1, ax = plt.subplots()
-vprior_depth2 = np.array([6000,5000,4000,3000,2000,1000])
-plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list, 'g.-', linewidth=5,label='$V_{prior}$')
-
-plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
-plt.xlabel('Well Drilling Cost ($)', color='darkred',fontsize=14)
 
 
 
-txtonplot = r'$v_{a=Drill}(\Theta=Positive) =$'
-ax.text(np.min(value_drill_DRYHOLE), value_array[-1,-1]*0.7, txtonplot+'\${:0,.0f}'.format(value_array[-1,-1]), 
-        size=12, color='green',
-         #va="baseline", ha="left", multialignment="left",
-          horizontalalignment='left',
-         verticalalignment='top')#, bbox=dict(fc="none"))
-
-if showVperfect:  
-    VPIlist = list(map(lambda uu: mymodule.Vperfect(Pr_prior_POS_demo, value_array,uu),value_drill_DRYHOLE))
-    # st.write('VPI',np.array(VPIlist),vprior_INPUT_demo_list)
-    VOIperfect = np.maximum((np.array(VPIlist)-np.array(vprior_INPUT_demo_list)),np.zeros(len(vprior_INPUT_demo_list)))
-    # VPI_list = list(map(lambda v: mymodule.f_Vperfect(Pr_prior_POS_demo, value_array, v), value_drill_DRYHOLE))
-    ax.plot(value_drill_DRYHOLE,VPIlist,'b', linewidth=5, alpha=0.5, label='$V_{perfect}$')
-    ax.plot(value_drill_DRYHOLE,VOIperfect,'b--', label='$VOI_{perfect}$')
-
-plt.legend(loc=1)
-plt.ylim([vprior_INPUT_min,value_array[-1,-1]*0.8]) # YLIM was (VPI_max+20)
-
-
-# additional code before plt.show()
-formatter = ticker.ScalarFormatter()
-formatter.set_scientific(False)
-# ax.yaxis.set_major_formatter(formatter)
-ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
-ax.xaxis.set_major_formatter(formatter)
-ax.xaxis.set_major_formatter('${x:0,.0f}')
-
-
-#st.pyplot(firstfig1)
 
 
 
 # Plotting Depth vs Value of Information
 #showVperfect2 = st.checkbox('Show Vperfect')
-firstfig2, ax = plt.subplots()
+firstfig2, ax = plt.subplots() # Plotting the VOI figure
 
 
-
-vprior_depth2 = np.array([6000,5000,4000,3000,2000,1000])
 plt.plot(vprior_depth, vprior_INPUT_demo_list, 'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
 plt.xlabel('Well Depth (m)', color='darkred',fontsize=14)
@@ -179,6 +165,7 @@ ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('{x:0,.0f}')
 
+#Code below plots the VOI plot
 st.pyplot(firstfig2)
 
 if showVperfect:  
