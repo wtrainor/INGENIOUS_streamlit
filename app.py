@@ -36,7 +36,8 @@ image= Image.open(BytesIO(response.content))
 st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
 #Code below plots the drilling cost vs depth
 vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
-value_drill_pos = value_drill_DRYHOLE*-1
+
+
 firstfig, ax = plt.subplots()
 #firstfig1, axe = plt.subplots(1,2)
 plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
@@ -58,9 +59,11 @@ value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_p
 ## Calculate Vprior
 #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
 #value_drill_DRYHOLE = np.linspace(100, -1e6,10)
-#Assigning values that match GEOPHIRES drilling costs.
+
 value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
 #value_drill_DRYHOLE = np.array([10.4e6, 7.9e6, 5.81e6, 4.11e6, 2.8e6, 1.9e6])
+#Assigning values that match GEOPHIRES drilling costs.
+value_drill_pos = value_drill_DRYHOLE*-1
 
 # Prior Probability SLIDER here
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
