@@ -53,7 +53,7 @@ value_drill_pos = value_drill_DRYHOLE*-1
 
 firstfig, ax = plt.subplots()
 #firstfig1, axe = plt.subplots(1,2)
-plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
+plt.plot(vprior_depth,value_drill_DRYHOLE,'r.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
 plt.xlabel('Depth (m)', color='darkred',fontsize=14)
 formatter = ticker.ScalarFormatter()
