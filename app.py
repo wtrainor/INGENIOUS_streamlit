@@ -74,6 +74,7 @@ st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v
 vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
 value_drill_pos = value_drill_DRYHOLE*-1
 firstfig, ax = plt.subplots()
+
 #firstfig1, axe = plt.subplots(1,2)
 plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
@@ -85,8 +86,11 @@ ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('{x:0,.0f}')
 
+
 #Code below plots the drilling cost vs depth
 st.pyplot(firstfig)
+
+
 
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
