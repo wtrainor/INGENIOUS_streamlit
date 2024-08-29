@@ -56,12 +56,12 @@ firstfig, ax = plt.subplots()
 plt.plot(vprior_depth,value_drill_DRYHOLE,'r.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
 plt.xlabel('Depth (m)', color='darkred',fontsize=14)
-formatter = ticker.ScalarFormatter()
-formatter.set_scientific(False)
-# ax.yaxis.set_major_formatter(formatter)
-ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
-ax.xaxis.set_major_formatter(formatter)
-ax.xaxis.set_major_formatter('{x:0,.0f}')
+# formatter = ticker.ScalarFormatter()
+# formatter.set_scientific(False)
+# # ax.yaxis.set_major_formatter(formatter)
+# ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
+# ax.xaxis.set_major_formatter(formatter)
+# ax.xaxis.set_major_formatter('{x:0,.0f}')
 st.pyplot(firstfig)
 
 # Prior Probability SLIDER here
