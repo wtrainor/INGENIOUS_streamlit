@@ -34,40 +34,7 @@ image= Image.open(BytesIO(response.content))
 
 #Code below plots the GEOPHIRES params from kmenon's github
 st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
-
-#### start of paste  -> CHANGE to input
-count_ij = np.zeros((2,6))
-value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 15e6, cost_drill_neg = -1e6)
-# # st.write('value_array', value_array)
-
-## Calculate Vprior
-#f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
-#value_drill_DRYHOLE = np.linspace(100, -1e6,10)
-#Assigning values that match GEOPHIRES drilling costs.
-value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
-#value_drill_DRYHOLE = np.array([10.4e6, 7.9e6, 5.81e6, 4.11e6, 2.8e6, 1.9e6])
-
-## Find Min Max for the Vprior Demo plot
-vprior_INPUT_min = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[-1])  
-vprior_INPUT_max = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[0])   
-VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE[0])  
-
-# Call f_VPRIOR over array value_drill_DRYHOLE
-#st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
-
-Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
-
-vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
-                                                              value_array,vv),value_drill_DRYHOLE))
-st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
-st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
-st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
-
-
-
-
-
-
+#Code below plots the drilling cost vs depth
 vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
 value_drill_pos = value_drill_DRYHOLE*-1
 firstfig, ax = plt.subplots()
@@ -81,9 +48,37 @@ formatter.set_scientific(False)
 ax.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('{x:0,.0f}')
-
-#Code below plots the drilling cost vs depth
 st.pyplot(firstfig)
+
+#### start of paste  -> CHANGE to input
+count_ij = np.zeros((2,6))
+value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 15e6, cost_drill_neg = -1e6)
+# # st.write('value_array', value_array)
+
+## Calculate Vprior
+#f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
+#value_drill_DRYHOLE = np.linspace(100, -1e6,10)
+#Assigning values that match GEOPHIRES drilling costs.
+value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
+#value_drill_DRYHOLE = np.array([10.4e6, 7.9e6, 5.81e6, 4.11e6, 2.8e6, 1.9e6])
+
+# Prior Probability SLIDER here
+#st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
+Pr_prior_POS_demo = mymodule.Prior_probability_binary()
+
+## Find Min Max for the Vprior Demo plot
+vprior_INPUT_min = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[-1])  
+vprior_INPUT_max = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[0])   
+VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE[0])  
+
+vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
+                                                              value_array,vv),value_drill_DRYHOLE))
+st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
+st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
+st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
+
+
+
 
 #>>>>>>> origin/Karthik
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
