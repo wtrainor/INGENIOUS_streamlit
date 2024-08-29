@@ -85,7 +85,7 @@ ax.xaxis.set_major_formatter('{x:0,.0f}')
 #Code below plots the drilling cost vs depth
 st.pyplot(firstfig)
 
->>>>>>> origin/Karthik
+#>>>>>>> origin/Karthik
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
 plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
