@@ -441,7 +441,7 @@ def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
     
     value_array[0,:] = [0, 0]
     value_array[1,:] = [cost_drill_neg, profit_drill_pos] 
-
+    
     index_labels = ['do nothing','drill']
     value_array_df = pd.DataFrame(value_array,index=index_labels,columns=['negative','positive'])
     
@@ -460,13 +460,22 @@ def f_VPRIOR(PriorWeight, value_array_mod, *args):
     cur_value_drill_DRYHOLE : float, optional, change/update value amount for dry hole
 
     """
+    v_array_temp = np.copy(value_array_mod) #Changed here by Karthik to prevent value array from being altered.
     cur_value_drill_DRYHOLE = None 
     for n in args:
       cur_value_drill_DRYHOLE = n
 
     if cur_value_drill_DRYHOLE is not None:    
-        value_array_mod[1,0] = cur_value_drill_DRYHOLE
+        #value_array_mod[1,0] = cur_value_drill_DRYHOLE
+
+        v_array_temp[1,0] = cur_value_drill_DRYHOLE
+      
+        # Changed here by Karthik on 30 Aug 2024 to reflect profit by reducing drilling cost
+        #value_array_mod[1,1] = value_array_mod[1,1] + cur_value_drill_DRYHOLE
+
+        v_array_temp[1,1] = v_array_temp[1,1] + cur_value_drill_DRYHOLE
         
+
     #print('modified value_array_mod',value_array_mod)    
     prm = PriorWeight #np.hstack((PriorWeight))
 
@@ -474,7 +483,8 @@ def f_VPRIOR(PriorWeight, value_array_mod, *args):
     # st.write('value_array_mod',value_array_mod)
     # Loop over all alternatives : Eventually be Nx * Ny alternatives
     for na in np.arange(0,np.shape(value_array_mod)[0]): # alternatives here are rows...
-        cur_a = np.sum(prm*value_array_mod[na,:])
+        #cur_a = np.sum(prm*value_array_mod[na,:])
+        cur_a = np.sum(prm*v_array_temp[na,:])
         # st.write('prm, ROW value_array_mod, SUM cur_a',prm,value_array_mod[na,:],cur_a)
         v_a = np.append(v_a, cur_a)
 
@@ -498,14 +508,19 @@ def Vperfect(input_prior, value_array_mod, *args):
     cur_value_drill_DRYHOLE : float, optional, value amount for testing VOI sensitivity
     """
 
+    #Similar change here by Karthik to accomadate drilling costs
+    v_array_temp = np.copy(value_array_mod)
     cur_value_drill_DRYHOLE = None 
     for n in args:
       cur_value_drill_DRYHOLE = n
 
     if cur_value_drill_DRYHOLE is not None:    
         value_array_mod[1,0] = cur_value_drill_DRYHOLE 
+        v_array_temp[1,0] = cur_value_drill_DRYHOLE
+        v_array_temp[1,1] = v_array_temp[1,1] + cur_value_drill_DRYHOLE
      
-    VPI = np.sum(input_prior * np.max(value_array_mod,0))
+    #VPI = np.sum(input_prior * np.max(value_array_mod,0))
+    VPI = np.sum(input_prior * np.max(v_array_temp,0))
 
     return VPI
 
