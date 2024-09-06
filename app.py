@@ -27,17 +27,14 @@ import mymodule
 
 # PRIORS - > USER INPUT
 st.header('Interactive Demonstration of Relationship between Value of Information and Prior Value')
-
 url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/dtree.png'
 
 response = requests.get(url)
 image= Image.open(BytesIO(response.content))
 
-#Code below plots the GEOPHIRES params from kmenon's github
-st.image(image, caption='GEOPHIRES Parameters used to obtain Drilling Costs')
-#Code below plots the drilling cost vs depth
+#Code below plots the Decision Tree image from kmenon's github
 vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
-st.image(image, caption='Sample Decision Tree')
+st.image(image, caption='Sample BinaryDecision Tree with Binary Geothermal Resource')
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
 #Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
@@ -46,7 +43,6 @@ st.image(image, caption='Sample Decision Tree')
 count_ij = np.zeros((2,6))
 value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 15e6, cost_drill_neg = -1e6)
 # # st.write('value_array', value_array)
-
 
 value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
 
@@ -65,11 +61,7 @@ ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('{x:0,.0f}')
 
 
-#Code below plots the drilling cost vs depth
-#st.pyplot(firstfig)
-
-
-
+# Code for table with decision outcomes defined by the user.
 newValuedf1 = pd.DataFrame({
                "action": ['do nothing','drill'],
                 
@@ -97,7 +89,6 @@ value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_p
 #value_drill_DRYHOLE = np.linspace(100, -1e6,10)
 #Assigning values that match GEOPHIRES drilling costs.
 
-
 #value_drill_DRYHOLE = np.array([10.4e6, 7.9e6, 5.81e6, 4.11e6, 2.8e6, 1.9e6])
 #value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
 
@@ -113,13 +104,6 @@ st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr
 st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
 st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
 
-
-
-
-
-
-
-
 plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
 plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
 plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
@@ -132,29 +116,10 @@ st.write(r'''$V_{prior} =  Prior\ Probability \ of \ Outcome \ under \ considera
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
 #st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
 
-# Code for table with decision outcomes defined by the user.
 
 
 # Plotting VOI
 showVperfect = st.checkbox('Show Vperfect')
-
-
-# Code for plotting 'nested' images
-
-#fig, (ax1) = plt.subplots(1, 1, figsize=[6, 3])
- 
-#im1 = ax1.imshow([[1, 2], [2, 3]])
-#axins1 = inset_axes(
-    #ax1,
-    #width="33%",  # width: 50% of parent_bbox width
-    #height="33%",  # height: 5%
-    #loc="center right",
-#)
-# axins1.xaxis.set_ticks_position("bottom")
-# fig.colorbar(im1, cax=axins1, orientation="horizontal", ticks=[1, 2, 3])
-
-
-
 
 # Plotting Depth vs Value of Information
 
@@ -168,9 +133,6 @@ plt.xlabel('Well Depth (m)', color='darkred',fontsize=14)
 
 
 
-
-
-
 # Plotting text on the VOI plot
 
 txtonplot = r'$v_{a=Drill}(\Theta=Positive) =$'
@@ -181,25 +143,6 @@ ax1.text(np.min(vprior_depth), value_array[-1,-1]*0.7, txtonplot+'\${:0,.0f}'.fo
          verticalalignment='top')#, bbox=dict(fc="none"))
 
 # Plotting the inset axes with drilling cost curve
-
-
-#axins1 = inset_axes(
- #   ax1,
-  #  width="33%",  # width: 50% of parent_bbox width
-   # height="33%",  # height: 5%
-    #loc="center right",
-#
-
-#axins1.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,color = 'red')
-
-#plt.ylabel(r'Average Drilling Cost [\$]',fontsize=7)
-#plt.xlabel('Depth (m)', color='darkred',fontsize=7)
-#formatter = ticker.ScalarFormatter()
-#formatter.set_scientific(False)
-# ax.yaxis.set_major_formatter(formatter)
-#axins1.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
-#axins1.xaxis.set_major_formatter(formatter)
-#axins1.xaxis.set_major_formatter('{x:0,.0f}')
 
 if showVperfect:  
     VPIlist = list(map(lambda uu: mymodule.Vperfect(Pr_prior_POS_demo, value_array,uu),value_drill_DRYHOLE))
@@ -217,8 +160,6 @@ formatter.set_scientific(False)
 ax1.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax1.xaxis.set_major_formatter(formatter)
 ax1.xaxis.set_major_formatter('{x:0,.0f}')
-
-
 
 axins1 = inset_axes(
     ax1,
