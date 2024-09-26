@@ -9,6 +9,7 @@ from PIL import Image
 import requests
 from io import BytesIO
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from sklearn.neighbors import KernelDensity
 
 # import babel.numbers
 # import decimal
@@ -18,7 +19,7 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import mymodule
 #import Bayesian_Modeling, Bayesian_Outputs, data_extraction, Naive_Bayes
 #from mymodule import Naive_Bayes
-
+#import Naive
 #arr = mymodule.make_data()
 
 # 1 made empty repository on github
@@ -248,21 +249,21 @@ st.pyplot(firstfig2)
 
 if showVperfect:  
     
-    st.write('Since you "know" when either subsurface condition occurs, you can pick the best ($\max\limits_a$) drilling altervative first ($v_a$).')
+    st.write('When you "know" when either subsurface condition occurs, you can pick the best ($\max\limits_a$) drilling altervative first ($v_a$).')
     st.write(r'''$V_{perfect} =  \Sigma_{i=1}^2 Pr(\Theta = \theta_i) \max\limits_a v_a(\theta_i) \ \  \forall a $''')
-    st.write(r'''$VOI_{perfect} = V_{perfect}-V_{prior}=$'''+str(VPIlist[0])+' - '+str(vprior_INPUT_demo_list[0]))
+    st.write(r'''$VOI_{perfect} (Value \ of \ Information) = V_{perfect}-V_{prior}=$'''+str(VPIlist[0])+' - '+str(vprior_INPUT_demo_list[0]))
 
-
+st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True) # Code to draw line to separate demo problem from main part
 with st.sidebar:
     attribute0 = None        
     # LOCATION OF THIS FILE 
     uploaded_files = st.file_uploader("Upload two data files,namely a Positive Label file (\'POS_\' :fire:) & a Negative Label (\'NEG_\':thumbsdown:) file",type=['csv'],accept_multiple_files=True)
-    st.write(len(uploaded_files))
+    
     count_neg= 0
     count_pos = 0
     if uploaded_files is not None and len(uploaded_files)==2:
         st.header('VOI APP')
-        st.subheader('ML Nevada Data')
+        st.subheader('App Data')
         st.subheader('Choose attribute for VOI calculation')
         
         for uploaded_file in uploaded_files:
@@ -276,7 +277,7 @@ with st.sidebar:
                     df = pd.read_csv(pos_upload_file)
             #       st.write('attribute0 is None',attribute0==None, not attribute0)
             #       if not attribute0:
-                    attribute0 = st.selectbox('What attributes would you like to calculate', df.columns) 
+                    attribute0 = st.selectbox('Which attribute would you like to explore?', df.columns) 
                     count_pos = count_pos + 1
             
             elif (uploaded_file.name[0:3]=='NEG'):
@@ -311,8 +312,9 @@ with st.sidebar:
 
 
 # uploaded_fileNEG = st.file_uploader("Choose a NEG file",type=['csv'])
-st.write('uploaded_files==None attribute0==None', uploaded_files==None)
+#st.write('uploaded_files==None attribute0==None', uploaded_files==None)
 if uploaded_files is not None:
+    st.title('Main App: ')
              
     if attribute0 is not None:
         st.title('You picked this attribute: '+attribute0)
@@ -331,11 +333,11 @@ if uploaded_files is not None:
 
         df_screen = df[df[x_cur]>-9999]
         df_screenN = dfN[dfN[x_cur]>-9999]
-        st.write('dataframe is shape: {thesize}'.format(thesize=df_screenN.shape))
+        #st.write('dataframe is shape: {thesize}'.format(thesize=df_screenN.shape))
         #st.write('attribute stats ', df_screen[attribute0].describe())
 
         neg_site_col_name = 'NegSite_Distance' # I change the name when making csv 'tsite_dist_nvml_neg_conus117_250m' #
-        distance_meters = st.slider('!USING THIS! '+neg_site_col_name+' Change likelihood by *screening* distance to positive label [meters]',
+        distance_meters = st.slider('The '+neg_site_col_name+' Change likelihood by *screening* distance to positive label [meters]',
                                     10, int(np.max(df_screen['PosSite_Distance'])-10), int(np.max(df_screen['PosSite_Distance'].quantile(0.1))), step=100) # min, max, default
         # NEG_distance_meters = st.slider('Change likelihood by *screening* distance to negative label [km or meters??]', 
         #     10, int(np.max(df_screenN['NegSite_Di'])-10), int(np.median(df_screenN['NegSite_Di'])), step=1000)
@@ -423,6 +425,133 @@ if uploaded_files is not None:
         # # Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
         Pr_InputMarg, Pr_UnifMarg, Prm_d_Input, Prm_d_Uniform = mymodule.Posterior_by_hand(Pr_prior_POS,predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
         # st.write(np.shape(Pr_Marg),Pr_Marg[0,-20:],Pr_Marg[1,-20:])
+        
+
+
+        # New plot for normalized likelihood
+        
+        
+
+        kde_pos = KernelDensity(bandwidth=best_params['bandwidth'], kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
+        kde_neg = KernelDensity(bandwidth=best_params['bandwidth'], kernel='gaussian')
+        
+        
+
+        # if np.shape(X_train)[1]>2:
+        # if train_test only all features
+        # two_d = X_train.iloc[:,x_cur] 
+        # x_d = np.linspace(min(X_train.iloc[:, x_cur]), max(X_train.iloc[:, x_cur]), 100) 
+        # else:
+        # if train_test only gets selected x_cur
+        forkde_pos = X_train[y_train>0]#.iloc[:,x_cur] #cur_feat
+        forkde_neg = X_train[y_train==0]; 
+
+        # two_d = X_train #.iloc[:,x_cur] #cur_feat
+        forkde_pos_np = forkde_pos.values
+        forkde_neg_np = forkde_neg.values; 
+        kde_pos.fit(forkde_pos_np[:,np.newaxis])
+        kde_neg.fit(forkde_neg_np[:,np.newaxis])
+        
+        # nbins = 100
+        x_sampled = np.arange(np.min(np.concatenate([X_train,X_test])),
+                        np.max(np.concatenate([X_train,X_test])),
+                        best_params['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
+        nbins=len(x_sampled)
+        st.write('min(x_d)',min(x_sampled),'max(x_d)',max(x_sampled),'len(x_d)=nbins', nbins)
+
+        Likelihood_logprob_pos = kde_pos.score_samples(x_sampled[:,np.newaxis]) #.score_samples
+        Likelihood_logprob_neg = kde_neg.score_samples(x_sampled[:,np.newaxis])
+        
+
+
+        likelihood = np.transpose(np.vstack((predictedLikelihood_neg, predictedLikelihood_pos)))
+        Pr_InputMarg2 = np.sum(likelihood,1)
+
+        InputMarg_weight = np.kron(Pr_InputMarg2[:,np.newaxis],np.ones((1,np.shape([1-Pr_prior_POS,Pr_prior_POS])[0]))) # should be num classes, num of Thetas
+        #Prm_like_Input = likelihood / InputMarg_weight
+        #InputMarg_weight = np.exp(InputMarg_weight)/np.sum(np.exp(InputMarg_weight))
+        Pr_InputMarg2 = np.sum(likelihood,1)
+        
+        
+        #likelihood = np.exp(likelihood)/np.sum(np.exp(likelihood))
+        #predictedLikelihood_neg = np.exp(predictedLikelihood_neg)/np.sum(np.exp(predictedLikelihood_neg))
+        
+        
+        #norm_pos1 = ((predictedLikelihood_pos* forkde_pos.shape[0]))
+        #norm_neg1 = ((predictedLikelihood_neg* forkde_neg.shape[0]))
+        
+
+        
+        
+        
+
+        
+
+        X_input_prior_weight_POS = np.outer(np.ones((np.shape(likelihood)[0],)),Prm_d_Input )
+        X_input_prior_weight_NEG = np.outer(np.ones((np.shape(likelihood)[0],)),1.0-Prm_d_Input )
+        X_input_prior_weight= np.hstack((X_input_prior_weight_NEG,X_input_prior_weight_POS))
+        valneg = predictedLikelihood_pos/ Pr_InputMarg
+        
+       
+
+        #norm_pos = norm_pos1
+        #norm_neg= norm_neg1
+
+       
+        
+
+        
+        fig20, ax2 = plt.subplots(figsize=(15,8),ncols=1,nrows=1) # CHANGED to one subplot
+        # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
+        #n_out = ax2.hist([X_test[y_test>0],X_test[y_test==0]], alpha=0.5,facecolor=['g','r'],
+        n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
+                        histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=x_sampled) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
+        posi = n_out[0]
+        posi = np.append(posi,0)
+        
+        n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
+                        histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)',bins=x_sampled) #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
+                        
+        ax2.legend(fontsize=18)
+        ax2.set_ylabel('Empirical data counts', fontsize=18)
+        ax2.tick_params(labelsize=20)
+        ax2_ylims = ax2.axes.get_ylim()  
+
+        negi = n_out[0]
+        negi = np.append(negi,0)
+        tot_posi = np.sum(posi)
+        tot_negi = np.sum(negi)
+        tot = posi+negi
+        tot_all = np.sum(tot)
+       
+
+        norm_pos1 = ((predictedLikelihood_pos* tot_posi))
+        norm_neg1 = ((predictedLikelihood_neg* tot_negi))
+
+        ax1 = plt.twinx(ax=ax2)
+        ax1.fill_between(x_sampled, norm_pos1, alpha=0.3,color='green')
+        ax1.plot(x_sampled,norm_pos1,'g.')
+        ax1.fill_between(x_sampled, norm_neg1, alpha=0.3,color='red')
+        ax1.plot(x_sampled,norm_neg1,'r.')
+        ax1.legend(loc=0, fontsize=17)
+        ax1.set_ylabel(' Normalized Likelihood $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=25)#, rotation=-90)
+        ax2.set_xlabel(str(x_cur), fontsize=18)
+        ax1.tick_params(labelsize=20)
+        ax_ylims = ax1.axes.get_ylim()  
+        #print('ax_ylims',ax_ylims)
+        #st.write('ax_ylims',ax_ylims)
+        ax1.set_ylim(0,ax_ylims[1])
+    
+        # ax1.set_ylim(0,ax2_ylims[1])
+        
+        # #.iloc[:,feat4]
+        # # n_out = plt.hist([X_test[y_test>0],X_test[y_test==0]], color=['r','g'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
+        # #.iloc[:,feat4]
+        # n_out = axes[1].hist([X_test[y_test>0],X_test[y_test==0]], color=['g','r'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
+        st.pyplot(fig20)
+
+        # Normalized Likelihood code ends here.
+
         
         mymodule.Posterior_Marginal_plot(Prm_d_Input, Prm_d_Uniform, Pr_InputMarg, x_cur, x_sampled) # WAS inputting: post_input, post_uniform, Pr_Marg, x_cur, x_sampled)
 
