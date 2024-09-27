@@ -415,7 +415,7 @@ def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
     plt.plot(x_sample,post_input[:,1],color='lime',linestyle='--', linewidth=3, label='$Pr(Positive|{})$ with Input Prior'.format(x_cur))
     plt.plot(x_sample,post_input[:,0],color='purple', linewidth=6)
     plt.plot(x_sample,post_input[:,0],'r--', linewidth=3,label='$Pr(Negative|{})$ with Input Prior'.format(x_cur))
-    plt.plot(x_sample,post_uniform[:,1],'g--', alpha=0.1, linewidth=3,label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
+    # plt.plot(x_sample,post_uniform[:,1],'g--', alpha=0.1, linewidth=3,label='$Pr(Postitive|{})$ with Uniform Prior'.format(x_cur))
     plt.plot(x_sample,post_uniform[:,1],color='purple', alpha=0.1)
     plt.ylim([0,1])
     plt.legend(loc=2,fontsize=18,facecolor='w')#,draggable='True') 
