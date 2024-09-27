@@ -9,7 +9,6 @@ from PIL import Image
 import requests
 from io import BytesIO
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-from sklearn.neighbors import KernelDensity
 
 # import babel.numbers
 # import decimal
@@ -17,10 +16,6 @@ from sklearn.neighbors import KernelDensity
 #locale.setlocale( locale.LC_ALL, '' )
 
 import mymodule
-#import Bayesian_Modeling, Bayesian_Outputs, data_extraction, Naive_Bayes
-#from mymodule import Naive_Bayes
-#import Naive
-#arr = mymodule.make_data()
 
 # 1 made empty repository on github
 # 2 PyCharm Project from github: .py script that is github, made script & requirements.txt, commit & pushed
@@ -83,7 +78,7 @@ original_title = '<p style="font-family:Courier; color:Black; font-size: 30px;">
 st.markdown(original_title, unsafe_allow_html=True)
 edited_df = st.data_editor(newValuedf1,hide_index=True,use_container_width=True)
 
-pos = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
+pos = np.float(edited_df[['Hydrothermal Resource (positive)']].values[1])
 #neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
 value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos, cost_drill_neg = -1e-6)
 
@@ -332,19 +327,19 @@ if uploaded_files is not None:
           
         st.write(':blue['+r'''$Pr(\Theta = \theta_i)$'''+'] in posterior')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
+
+        st.subheader('~:blue[Prior]:point_up_2: x Likelhood :arrow_heading_up:')            
+        # New plot for normalized likelihood: Modeled after Likelihood via KDE estimate
+        mymodule.Scaledlikelihood_KDE(Pr_prior_POS,predictedLikelihood_neg, predictedLikelihood_pos,X_train,X_test, y_train, y_test,x_cur,x_sampled, best_params)
+        
         st.header('How much is this imperfect data worth?')
         st.subheader(':point_down: :violet[Posterior]~:blue[Prior]:point_up_2: x Likelhood :arrow_heading_up:')
-        
         # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
         post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
-                
+             
         # # DO NOT USEmymodule.marginal( because it's passing unscaled likelihood!!!)
         # # Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
         Pr_InputMarg, Pr_UnifMarg, Prm_d_Input, Prm_d_Uniform = mymodule.Posterior_by_hand(Pr_prior_POS,predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
-        
-        # New plot for normalized likelihood: Modeled after Likelihood via KDE estimate
-        mymodule.Scaledlikelihood_KDE(Pr_prior_POS,predictedLikelihood_neg, predictedLikelihood_pos,X_train,X_test, y_train, y_test,x_cur,x_sampled, best_params)
-
         mymodule.Posterior_Marginal_plot(Prm_d_Input, Prm_d_Uniform, Pr_InputMarg, x_cur, x_sampled) # WAS inputting: post_input, post_uniform, Pr_Marg, x_cur, x_sampled)
 
         # # # # # # VALUE OUTCOMES # # # # # # # # # #
@@ -365,8 +360,8 @@ if uploaded_files is not None:
         st.markdown(original_title, unsafe_allow_html=True)
         edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
 
-        pos = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
-        neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
+        pos = np.float(edited_df[['Hydrothermal Resource (positive)']].values[1])
+        neg = np.float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
 
         value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos, cost_drill_neg = neg) # Karthik Changed here to reflect new values
         #st.write('value_array', value_array)
