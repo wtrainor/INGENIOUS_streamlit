@@ -278,6 +278,69 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_parameters):
     # NOT LOG LIKELIHOOD
     return pos_like_scaled, neg_like_scaled, x_d, count_ij 
 
+def Scaledlikelihood_KDE(Pr_prior_POS, Likelihood_neg, Likelihood_pos, X_train,X_test, y_train, y_test,x_cur, x_sampled, best_parameters):
+        
+    likelihood = np.transpose(np.vstack((Likelihood_neg, Likelihood_pos)))
+    Pr_InputMarg2 = np.sum(likelihood,1)
+
+    InputMarg_weight = np.kron(Pr_InputMarg2[:,np.newaxis],np.ones((1,np.shape([1-Pr_prior_POS,Pr_prior_POS])[0]))) # should be num classes, num of Thetas
+    #Prm_like_Input = likelihood / InputMarg_weight
+    #InputMarg_weight = np.exp(InputMarg_weight)/np.sum(np.exp(InputMarg_weight))
+    Pr_InputMarg2 = np.sum(likelihood,1)
+    
+    # X_input_prior_weight_POS = np.outer(np.ones((np.shape(likelihood)[0],)),Prm_d_Input ) # this is the posterios...
+    # X_input_prior_weight_NEG = np.outer(np.ones((np.shape(likelihood)[0],)),1.0-Prm_d_Input )
+    # X_input_prior_weight= np.hstack((X_input_prior_weight_NEG,X_input_prior_weight_POS))
+    # valneg = Likelihood_pos/ Pr_InputMarg
+                    
+    fig20, ax2 = plt.subplots(figsize=(15,8),ncols=1,nrows=1) # CHANGED to one subplot
+    # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
+    #n_out = ax2.hist([X_test[y_test>0],X_test[y_test==0]], alpha=0.5,facecolor=['g','r'],
+    n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
+                    histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=x_sampled) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
+    posi = n_out[0]
+    posi = np.append(posi,0)
+    
+    n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
+                    histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)',bins=x_sampled) #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
+                    
+    ax2.legend(fontsize=18)
+    ax2.set_ylabel('Empirical data counts', fontsize=18)
+    ax2.tick_params(labelsize=20)
+    ax2_ylims = ax2.axes.get_ylim()  
+
+    negi = n_out[0]
+    negi = np.append(negi,0)
+    tot_posi = np.sum(posi)
+    tot_negi = np.sum(negi)
+    tot = posi+negi
+    tot_all = np.sum(tot)
+    
+
+    norm_pos1 = ((Likelihood_pos* tot_posi))
+    norm_neg1 = ((Likelihood_neg* tot_negi))
+
+    ax1 = plt.twinx(ax=ax2)
+    ax1.fill_between(x_sampled, norm_pos1, alpha=0.3,color='green')
+    ax1.plot(x_sampled,norm_pos1,'g.')
+    ax1.fill_between(x_sampled, norm_neg1, alpha=0.3,color='red')
+    ax1.plot(x_sampled,norm_neg1,'r.')
+    ax1.legend(loc=0, fontsize=17)
+    ax1.set_ylabel(' Normalized Likelihood $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=25)#, rotation=-90)
+    ax2.set_xlabel(str(x_cur), fontsize=18)
+    ax1.tick_params(labelsize=20)
+    ax_ylims = ax1.axes.get_ylim()  
+    #print('ax_ylims',ax_ylims)
+    #st.write('ax_ylims',ax_ylims)
+    ax1.set_ylim(0,ax_ylims[1])
+
+    # ax1.set_ylim(0,ax2_ylims[1])
+    
+    # #.iloc[:,feat4]
+    # # n_out = plt.hist([X_test[y_test>0],X_test[y_test==0]], color=['r','g'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
+    # #.iloc[:,feat4]
+    # n_out = axes[1].hist([X_test[y_test>0],X_test[y_test==0]], color=['g','r'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
+    st.pyplot(fig20)
 
 def Prior_probability_binary(mykey=None): #x_sample, X_train,
     """
