@@ -100,8 +100,8 @@ def make_train_test(dfpair,x_cur,dfpairN):
         data that are associated with negative label
 
     returns
-         X_train, y_train [(number of data points)*0.67 x 1]
-         X_test, y_test [(number of data points)*0.33 x 1]
+         X_train, y_train [(number of data points)*0.80 x 1]
+         X_test, y_test [(number of data points)*0.20 x 1]
     """
     X_all = pd.concat((dfpair[x_cur],dfpairN[x_cur]))
     
@@ -109,7 +109,7 @@ def make_train_test(dfpair,x_cur,dfpairN):
     y_g = np.ones((1, dfpair.shape[0]))
     y_all = np.append(y_g,(np.zeros((1, dfpairN.shape[0]))))
     
-    X_train, X_test, y_train, y_test = train_test_split(X_all, y_all, test_size=0.33, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X_all, y_all, test_size=0.20, random_state=42)
     
     return  X_train, X_test, y_train, y_test 
 
@@ -137,8 +137,8 @@ def optimal_bin(X_train, y_train):
     #st.write(X_train.iloc[0:5], X_train_np[0:3])
     grid.fit(X_train_np[:,None],y_train) # removed  [:,None],  .to_numpy() doesn't work np.reshape(,(-1,1)), y_train
     scores = grid.cv_results_['mean_test_score']
-    st.write(grid.best_params_)
-    st.write('accuracy =', grid.best_score_)
+    # st.write(grid.best_params_)
+    # st.write('accuracy =', grid.best_score_)
 
     return grid.best_params_,  grid.best_score_
 
@@ -148,8 +148,8 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_parameters):
 
     Parameters
     ----------
-    X_train : array-like [1 x 0.67*number samples] (67%)
-    X_test : array-like [1 x 0.33*number samples]  (33%)
+    X_train : array-like [1 x proportion*number samples] (eg 67%)
+    X_test : array-like [1 x (1-proportion)*number samples]  (eg 33%)
     x_cur : string, colummn name of attribute/data type being assessed
     best_parameters : dictionary
     Output
@@ -189,7 +189,7 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_parameters):
                     np.max(np.concatenate([X_train,X_test])),
                     best_parameters['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
     nbins=len(x_d)
-    st.write('min(x_d)',min(x_d),'max(x_d)',max(x_d),'len(x_d)=nbins', nbins)
+    # st.write('min(x_d)',min(x_d),'max(x_d)',max(x_d),'len(x_d)=nbins', nbins)
 
     Likelihood_logprob_pos = kde_pos.score_samples(x_d[:,np.newaxis]) #.score_samples
     Likelihood_logprob_neg = kde_neg.score_samples(x_d[:,np.newaxis])
@@ -203,12 +203,16 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_parameters):
     #pos_like_scaled = Likelihood_logprob_pos
     #neg_like_scaled = Likelihood_logprob_neg
     # st.write(kde_pos.bandwidth, (X_test.max() - X_test.min()) / kde_pos.bandwidth)
+
+    X_pos_all = pd.concat((X_train[y_train>0],X_test[y_test>0]))
+    X_neg_all = pd.concat((X_train[y_train==0],X_test[y_test==0]))
+
     fig2, ax2 = plt.subplots(figsize=(15,8),ncols=1,nrows=1) # CHANGED to one subplot
     # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
     #n_out = ax2.hist([X_test[y_test>0],X_test[y_test==0]], alpha=0.5,facecolor=['g','r'],
-    n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
+    n_out = ax2.hist(X_pos_all, alpha=0.3,facecolor='g',#[X_train[y_train>0]]
                      histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=x_d) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
-    n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
+    n_out = ax2.hist(X_neg_all, alpha=0.3,facecolor='r',#X_train[y_train==0]
                      histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)',bins=x_d) #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
                      
     ax2.legend(fontsize=18)
@@ -280,28 +284,24 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_parameters):
 
 def Scaledlikelihood_KDE(Pr_prior_POS, Likelihood_neg, Likelihood_pos, X_train,X_test, y_train, y_test,x_cur, x_sampled, best_parameters):
         
-    likelihood = np.transpose(np.vstack((Likelihood_neg, Likelihood_pos)))
-    Pr_InputMarg2 = np.sum(likelihood,1)
 
-    InputMarg_weight = np.kron(Pr_InputMarg2[:,np.newaxis],np.ones((1,np.shape([1-Pr_prior_POS,Pr_prior_POS])[0]))) # should be num classes, num of Thetas
-    #Prm_like_Input = likelihood / InputMarg_weight
-    #InputMarg_weight = np.exp(InputMarg_weight)/np.sum(np.exp(InputMarg_weight))
-    Pr_InputMarg2 = np.sum(likelihood,1)
-    
-    # X_input_prior_weight_POS = np.outer(np.ones((np.shape(likelihood)[0],)),Prm_d_Input ) # this is the posterios...
-    # X_input_prior_weight_NEG = np.outer(np.ones((np.shape(likelihood)[0],)),1.0-Prm_d_Input )
-    # X_input_prior_weight= np.hstack((X_input_prior_weight_NEG,X_input_prior_weight_POS))
-    # valneg = Likelihood_pos/ Pr_InputMarg
-                    
+    likelihood = np.transpose(np.vstack((Likelihood_neg, Likelihood_pos)))
+    #st.write('np.sum(likelihood,1)',np.shape(likelihood),np.sum(likelihood,1))
+
+    X_input_prior_weight_POS = np.outer(np.ones((np.shape(likelihood)[0],)),Pr_prior_POS )
+    X_input_prior_weight_NEG = np.outer(np.ones((np.shape(likelihood)[0],)),1.0-Pr_prior_POS )
+    X_input_prior_weight= np.hstack((X_input_prior_weight_NEG,X_input_prior_weight_POS))
+    ScaledLikelihood = X_input_prior_weight * likelihood
+
+                        
     fig20, ax2 = plt.subplots(figsize=(15,8),ncols=1,nrows=1) # CHANGED to one subplot
-    # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
-    #n_out = ax2.hist([X_test[y_test>0],X_test[y_test==0]], alpha=0.5,facecolor=['g','r'],
-    n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
-                    histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=x_sampled) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
-    posi = n_out[0]
-    posi = np.append(posi,0)
     
-    n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
+    n_out = ax2.hist([X_train[y_train>0]], alpha=0.1,facecolor='g',
+                    histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=x_sampled) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
+    # posi = n_out[0]
+    # posi = np.append(posi,0)
+    
+    n_out = ax2.hist(X_train[y_train==0], alpha=0.1,facecolor='r',
                     histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)',bins=x_sampled) #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
                     
     ax2.legend(fontsize=18)
@@ -309,31 +309,29 @@ def Scaledlikelihood_KDE(Pr_prior_POS, Likelihood_neg, Likelihood_pos, X_train,X
     ax2.tick_params(labelsize=20)
     ax2_ylims = ax2.axes.get_ylim()  
 
-    negi = n_out[0]
-    negi = np.append(negi,0)
-    tot_posi = np.sum(posi)
-    tot_negi = np.sum(negi)
-    tot = posi+negi
-    tot_all = np.sum(tot)
+    # negi = n_out[0]
+    # negi = np.append(negi,0)
+    # tot_posi = np.sum(posi)
+    # tot_negi = np.sum(negi)
+    # tot = posi+negi
+    # tot_all = np.sum(tot)
     
-
-    norm_pos1 = ((Likelihood_pos* tot_posi))
-    norm_neg1 = ((Likelihood_neg* tot_negi))
+    # norm_pos1 = ((Likelihood_pos* tot_posi))
+    # norm_neg1 = ((Likelihood_neg* tot_negi))
 
     ax1 = plt.twinx(ax=ax2)
-    ax1.fill_between(x_sampled, norm_pos1, alpha=0.3,color='green')
-    ax1.plot(x_sampled,norm_pos1,'g.')
-    ax1.fill_between(x_sampled, norm_neg1, alpha=0.3,color='red')
-    ax1.plot(x_sampled,norm_neg1,'r.')
+    ax1.fill_between(x_sampled, ScaledLikelihood[:,1], alpha=0.4,color='green') #norm_pos1, InputMarg_weight
+    ax1.plot(x_sampled, ScaledLikelihood[:,1],'g.') # norm_pos1
+    ax1.fill_between(x_sampled,ScaledLikelihood[:,0], alpha=0.4,color='red') #norm_neg1 InputMarg_weight
+    ax1.plot(x_sampled, ScaledLikelihood[:,0],'r.')  #norm_neg1
     ax1.legend(loc=0, fontsize=17)
-    ax1.set_ylabel(' Normalized Likelihood $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=25)#, rotation=-90)
+    ax1.set_ylabel(' Scaled Likelihood $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=25)#, rotation=-90)
     ax2.set_xlabel(str(x_cur), fontsize=18)
     ax1.tick_params(labelsize=20)
     ax_ylims = ax1.axes.get_ylim()  
     #print('ax_ylims',ax_ylims)
-    #st.write('ax_ylims',ax_ylims)
+    st.write('ax_ylims',ax_ylims)
     ax1.set_ylim(0,ax_ylims[1])
-
     # ax1.set_ylim(0,ax2_ylims[1])
     
     # #.iloc[:,feat4]
