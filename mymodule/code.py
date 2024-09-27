@@ -199,6 +199,9 @@ def likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_parameters):
 
     pos_like_scaled = np.exp(Likelihood_logprob_pos)/np.sum(np.exp(Likelihood_logprob_pos))
     neg_like_scaled = np.exp(Likelihood_logprob_neg)/np.sum(np.exp(Likelihood_logprob_neg))
+
+    #pos_like_scaled = Likelihood_logprob_pos
+    #neg_like_scaled = Likelihood_logprob_neg
     # st.write(kde_pos.bandwidth, (X_test.max() - X_test.min()) / kde_pos.bandwidth)
     fig2, ax2 = plt.subplots(figsize=(15,8),ncols=1,nrows=1) # CHANGED to one subplot
     # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
@@ -328,6 +331,8 @@ def Posterior_via_NaiveBayes(Pr_input_POS, X_train, X_test, y_train, y_test, x_s
     # st.write('post_input[:,1]',post_input[:,1])
 
     return post_input, post_uniform
+
+
 
 def Posterior_Marginal_plot(post_input, post_uniform,marg,x_cur, x_sample):
     """
