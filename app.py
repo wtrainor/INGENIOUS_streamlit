@@ -325,6 +325,17 @@ if uploaded_files is not None:
         
         # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
         post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
+                
+        # # DO NOT USEmymodule.marginal( because it's passing unscaled likelihood!!!)
+        # # Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
+        Pr_InputMarg, Pr_UnifMarg, Prm_d_Input, Prm_d_Uniform = mymodule.Posterior_by_hand(Pr_prior_POS,predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
+        
+        # New plot for normalized likelihood: Modeled after Likelihood via KDE estimate
+        mymodule.Scaledlikelihood_KDE(Pr_prior_POS,predictedLikelihood_neg, predictedLikelihood_pos,X_train,X_test, y_train, y_test,x_cur,x_sampled, best_params)
+
+        mymodule.Posterior_Marginal_plot(Prm_d_Input, Prm_d_Uniform, Pr_InputMarg, x_cur, x_sampled) # WAS inputting: post_input, post_uniform, Pr_Marg, x_cur, x_sampled)
+
+        # # # # # # VALUE OUTCOMES # # # # # # # # # #
         newValuedf = pd.DataFrame({
                "action": ['do nothing','drill'],
                 "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
@@ -359,25 +370,8 @@ if uploaded_files is not None:
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
         # st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
         #st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
-        
-        # # DO NOT USEmymodule.marginal( because it's passing unscale likelihood!!!)
-        # # Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
-        Pr_InputMarg, Pr_UnifMarg, Prm_d_Input, Prm_d_Uniform = mymodule.Posterior_by_hand(Pr_prior_POS,predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
-        # st.write(np.shape(Pr_Marg),Pr_Marg[0,-20:],Pr_Marg[1,-20:])
-        
-
-        # New plot for normalized likelihood
-        
-        # Modeled after Likelihood via KDE estimate
-        mymodule.Scaledlikelihood_KDE(Pr_prior_POS,predictedLikelihood_neg, predictedLikelihood_pos,X_train,X_test, y_train, y_test,x_cur,x_sampled, best_params)
-        
-        # Normalized Likelihood code ends here.
-
-        
-        mymodule.Posterior_Marginal_plot(Prm_d_Input, Prm_d_Uniform, Pr_InputMarg, x_cur, x_sampled) # WAS inputting: post_input, post_uniform, Pr_Marg, x_cur, x_sampled)
 
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
-        
         VII_input = mymodule.f_VIMPERFECT(Prm_d_Input, value_array, Pr_InputMarg)
         VII_unifPrior = mymodule.f_VIMPERFECT(Prm_d_Uniform, value_array, Pr_UnifMarg)
         
@@ -396,10 +390,6 @@ if uploaded_files is not None:
         #original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
         #st.markdown(original_title, unsafe_allow_html=True)
         #edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
-
-        
-        
-    
         
         #st.data_editor(value_array_df,
                          #column_config={
@@ -418,13 +408,12 @@ if uploaded_files is not None:
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
         st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
-        st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
+        # st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
         
-
         MI_post, NMI_post = mymodule.f_MI(Prm_d_Input,Pr_InputMarg)
-        st.write('Mutual Information:', MI_post)
-        st.write('Normalized Mutual Information:', NMI_post)
-        st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
+        # st.write('Mutual Information:', MI_post)
+        # st.write('Normalized Mutual Information:', NMI_post)
+        # st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
         dataframe4clipboard = pd.DataFrame([[VII_input,NMI_post,accuracy]])#,  columns=['VII','NMI','accuracy'])
         #st.write(dataframe4clipboard)
        #dataframe4clipboard.to_clipboard(excel=True,index=False)
