@@ -54,7 +54,7 @@ vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
 value_drill_pos = value_drill_DRYHOLE
 firstfig, ax = plt.subplots()
 #firstfig1, axe = plt.subplots(1,2)
-plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$', color = 'red')
+plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')#, color = 'red')
 plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
 plt.xlabel('Depth (m)', color='darkred',fontsize=14)
 formatter = ticker.ScalarFormatter()
@@ -104,23 +104,35 @@ VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE
 
 vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
                                                               value_array,vv),value_drill_DRYHOLE))
-st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
-st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
-st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
+st.subheader('$Pr(Success) = Pr(Geothermal=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
+st.subheader('$V_{prior} =$  best action given each weighted average')
+# st.markdown("""
+# <style>
+# .big-latex {
+#     font-size:60px !important;
+# }
+# </style>
+# """, unsafe_allow_html=True)
 
-plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
-plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
-plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
+#st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
+# st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
+#stuff = '''$V_{prior}=$'''
+#st.markdown(stuff, unsafe_allow_html=True) #'<p class="big-latex"> stuff </p>'
+st.write(r'''$V_{prior} = \max\limits_a 
+            \begin{cases} Pr(positive) v_{drill}(positive) + Pr(negative)  v_{drill}(negative) &\text{if drill}\\
+            Pr(positive) v_{nothing}(positive) + Pr(negative)  v_{nothing}(negative)  =0         &\text{if do nothing}\end{cases} $''')
+#
+# st.latex(r'''x = \begin{cases}
+#    a &\text{if } b \\
+#    c &\text{if } d \\
+# \end{cases}''')
+         
+# st.write(r'''$\Theta$ =  Uncertain geologic parameter, $\theta_1$ = positive geothermal state, $\theta_2$ = negative geothermal state''')
+# st.write(r'''$a =$  Action being taken (e.g. drill or do nothing)''')
+#
 
-st.write(r'''$\Theta =  Uncertain \ geologic \ parameter $''')
-st.write(r'''$\theta_i =  ith \ possible\ geologic \ state $''')
-st.write(r'''$a =  Action \ being \ taken $''')
-st.write(r'''$i =  Outcome \ index $''')
-st.write(r'''$V_{prior} =  Prior\ Probability \ of \ Outcome \ under \ consideration \ for \ a \ given \ Feature\  $''')
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
 #st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
-
-
 
 # Plotting VOI
 showVperfect = st.checkbox('Show Vperfect')
@@ -172,7 +184,7 @@ axins1 = inset_axes(
     loc="center right",
 )
 
-axins1.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,color = 'red')
+axins1.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5)#,color = 'red')
 
 #plt.ylabel(r'Average Drilling Cost [\$]',fontsize=7)
 plt.xlabel('Depth (m)', color='darkred',fontsize=7)
