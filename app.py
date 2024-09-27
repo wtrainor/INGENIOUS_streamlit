@@ -318,13 +318,7 @@ if uploaded_files is not None:
 
         # Likelihood via KDE estimate
         predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_params)
-
-              
-        #st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
-        #st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
-        #             :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] \
-        #             '+r'''$Pr( X=x_j | \Theta = \theta_i )$''')
-          
+      
         st.write(':blue['+r'''$Pr(\Theta = \theta_i)$'''+'] in posterior')
         Pr_prior_POS = mymodule.Prior_probability_binary('Prior used in Posterior')
 
