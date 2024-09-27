@@ -28,14 +28,17 @@ import mymodule
 
 # PRIORS - > USER INPUT
 st.header('Interactive Demonstration of Relationship between Value of Information and Prior Value')
-url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/dtree.png'
 
-response = requests.get(url)
-image= Image.open(BytesIO(response.content))
 
 #Code below plots the Decision Tree image from kmenon's github
+# url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/dtree.png'
+# response = requests.get(url)
+# image= Image.open(BytesIO(response.content))
+# st.image(image, caption='Sample BinaryDecision Tree with Binary Geothermal Resource')
+
+
 vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
-st.image(image, caption='Sample BinaryDecision Tree with Binary Geothermal Resource')
+
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
 #Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
@@ -309,10 +312,7 @@ if uploaded_files is not None:
         # Likelihood via KDE estimate
         predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_params)
 
-        #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
-        #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
-
-        
+              
         #st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
         #st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
         #             :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] \
@@ -411,6 +411,8 @@ if uploaded_files is not None:
         # st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
         
         MI_post, NMI_post = mymodule.f_MI(Prm_d_Input,Pr_InputMarg)
+        #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
+        #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
         # st.write('Mutual Information:', MI_post)
         # st.write('Normalized Mutual Information:', NMI_post)
         # st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
