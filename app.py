@@ -384,42 +384,7 @@ if uploaded_files is not None:
         st.header('How much is this imperfect data worth?')
         st.subheader(':point_down: :violet[Posterior]~:blue[Prior]:point_up_2: x Likelhood :arrow_heading_up:')
         
-        # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
-        post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
-        newValuedf = pd.DataFrame({
-               "action": ['do nothing','drill'],
-                "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
-                "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
-        )
-
-        # list = 
-        # idx= pd.Index(list)
-        # newValuedf.set_index(idx)
-        newValuedf.style.set_properties(**{'font-size': '35pt'}) # this doesn't seem to work
-        #bigdf.style.background_gradient(cmap, axis=1)\
-
-        # Code to be written to input these values
-        original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
-        st.markdown(original_title, unsafe_allow_html=True)
-        edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
-
-        pos = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
-        neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
-
-        value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos, cost_drill_neg = neg) # Karthik Changed here to reflect new values
-        #st.write('value_array', value_array)
-
-        #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
-        value_drill_DRYHOLE = np.linspace(100, -1e6,10)
-
-        # This function can be called with multiple values of "dry hole"
-        vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
-                       
-        #st.subheader(r'''$V_{prior}$ '''+'${:0,.0f}'.format(vprior_unif_out).replace('$-','-$'))
-
-        VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
-        # st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
-        #st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
+       
         
         # # DO NOT USEmymodule.marginal( because it's passing unscale likelihood!!!)
         # # Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
@@ -457,7 +422,7 @@ if uploaded_files is not None:
                         np.max(np.concatenate([X_train,X_test])),
                         best_params['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
         nbins=len(x_sampled)
-        st.write('min(x_d)',min(x_sampled),'max(x_d)',max(x_sampled),'len(x_d)=nbins', nbins)
+        
 
         Likelihood_logprob_pos = kde_pos.score_samples(x_sampled[:,np.newaxis]) #.score_samples
         Likelihood_logprob_neg = kde_neg.score_samples(x_sampled[:,np.newaxis])
@@ -524,9 +489,9 @@ if uploaded_files is not None:
         tot = posi+negi
         tot_all = np.sum(tot)
        
-
-        norm_pos1 = ((predictedLikelihood_pos* tot_posi))
-        norm_neg1 = ((predictedLikelihood_neg* tot_negi))
+       
+        norm_pos1 = ((predictedLikelihood_pos*Pr_prior_POS))
+        norm_neg1 = ((predictedLikelihood_neg*(1-Pr_prior_POS))) # Scaling by prior
 
         ax1 = plt.twinx(ax=ax2)
         ax1.fill_between(x_sampled, norm_pos1, alpha=0.3,color='green')
@@ -534,7 +499,7 @@ if uploaded_files is not None:
         ax1.fill_between(x_sampled, norm_neg1, alpha=0.3,color='red')
         ax1.plot(x_sampled,norm_neg1,'r.')
         ax1.legend(loc=0, fontsize=17)
-        ax1.set_ylabel(' Normalized Likelihood $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=25)#, rotation=-90)
+        ax1.set_ylabel('Likelihood (Scaled by Prior) $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=25)#, rotation=-90)
         ax2.set_xlabel(str(x_cur), fontsize=18)
         ax1.tick_params(labelsize=20)
         ax_ylims = ax1.axes.get_ylim()  
@@ -554,6 +519,42 @@ if uploaded_files is not None:
 
         
         mymodule.Posterior_Marginal_plot(Prm_d_Input, Prm_d_Uniform, Pr_InputMarg, x_cur, x_sampled) # WAS inputting: post_input, post_uniform, Pr_Marg, x_cur, x_sampled)
+
+        # Table for decision metrics
+        # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
+        post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
+        newValuedf = pd.DataFrame({
+               "action": ['do nothing','drill'],
+                "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
+                "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
+        )
+
+        # list = 
+        # idx= pd.Index(list)
+        # newValuedf.set_index(idx)
+        newValuedf.style.set_properties(**{'font-size': '35pt'}) # this doesn't seem to work
+        #bigdf.style.background_gradient(cmap, axis=1)\
+
+        # Code to be written to input these values
+        original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
+        st.markdown(original_title, unsafe_allow_html=True)
+        edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
+
+        pos = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
+        neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
+
+        value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos, cost_drill_neg = neg) # Karthik Changed here to reflect new values
+        #st.write('value_array', value_array)
+
+        #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
+        value_drill_DRYHOLE = np.linspace(100, -1e6,10)
+
+        # This function can be called with multiple values of "dry hole"
+        vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
+                       
+        #st.subheader(r'''$V_{prior}$ '''+'${:0,.0f}'.format(vprior_unif_out).replace('$-','-$'))
+
+        VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
 
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
         
@@ -601,10 +602,10 @@ if uploaded_files is not None:
         
 
         MI_post, NMI_post = mymodule.f_MI(Prm_d_Input,Pr_InputMarg)
-        st.write('Mutual Information:', MI_post)
-        st.write('Normalized Mutual Information:', NMI_post)
-        st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
-        dataframe4clipboard = pd.DataFrame([[VII_input,NMI_post,accuracy]])#,  columns=['VII','NMI','accuracy'])
+        #st.write('Mutual Information:', MI_post)
+        #st.write('Normalized Mutual Information:', NMI_post)
+        #st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
+        #dataframe4clipboard = pd.DataFrame([[VII_input,NMI_post,accuracy]])#,  columns=['VII','NMI','accuracy'])
         #st.write(dataframe4clipboard)
        #dataframe4clipboard.to_clipboard(excel=True,index=False)
 
