@@ -69,7 +69,7 @@ def normpdf(x, mean, sd):
 
 def st_file_selector(st_placeholder, path='.', label='Please, select a file/folder...'):
     # get base path (directory)
-    base_path = '.' if path == None or path is '' else path
+    base_path = '.' if path == None or path == '' else path
     base_path = base_path if os.path.isdir(
         base_path) else os.path.dirname(base_path)
     base_path = '.' if base_path is None or base_path is '' else base_path
