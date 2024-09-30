@@ -29,15 +29,16 @@ import mymodule
 # PRIORS - > USER INPUT
 st.header('Interactive Demonstration of Relationship between Value of Information and Prior Value')
 
-url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/dtree.png'
 
-response = requests.get(url)
-image= Image.open(BytesIO(response.content))
+#Code below plots the Decision Tree image from kmenon's github
+# url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/dtree.png'
+# response = requests.get(url)
+# image= Image.open(BytesIO(response.content))
+# st.image(image, caption='Sample BinaryDecision Tree with Binary Geothermal Resource')
 
-#image = Image.open("C:\\Users\\kmenon\\Pictures\\Screenshots\\VOI-app-geophires-input.png")
 
-#Code below plots the GEOPHIRES params from kmenon's github
-st.image(image, caption='Sample Decision Tree')
+vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
+
 #st.write('What\'s the Prior Probability of a POSITIVE geothermal site?  $Pr(x=Positive)$')
 #Pr_prior_POS_demo = mymodule.Prior_probability_binary() 
 
@@ -47,14 +48,13 @@ count_ij = np.zeros((2,6))
 value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= 15e6, cost_drill_neg = -1e6)
 # # st.write('value_array', value_array)
 
-
 value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
 
 vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
 value_drill_pos = value_drill_DRYHOLE
 firstfig, ax = plt.subplots()
 #firstfig1, axe = plt.subplots(1,2)
-plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$', color = 'red')
+plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')#, color = 'red')
 plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
 plt.xlabel('Depth (m)', color='darkred',fontsize=14)
 formatter = ticker.ScalarFormatter()
@@ -65,11 +65,7 @@ ax.xaxis.set_major_formatter(formatter)
 ax.xaxis.set_major_formatter('{x:0,.0f}')
 
 
-#Code below plots the drilling cost vs depth
-#st.pyplot(firstfig)
-
-
-
+# Code for table with decision outcomes defined by the user.
 newValuedf1 = pd.DataFrame({
                "action": ['do nothing','drill'],
                 
@@ -97,7 +93,6 @@ value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_p
 #value_drill_DRYHOLE = np.linspace(100, -1e6,10)
 #Assigning values that match GEOPHIRES drilling costs.
 
-
 #value_drill_DRYHOLE = np.array([10.4e6, 7.9e6, 5.81e6, 4.11e6, 2.8e6, 1.9e6])
 #value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
 
@@ -107,57 +102,40 @@ vprior_INPUT_min = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE
 vprior_INPUT_max = mymodule.f_VPRIOR([0.9,0.1], value_array, value_drill_DRYHOLE[0])   
 VPI_max = mymodule.Vperfect(Pr_prior_POS_demo, value_array,  value_drill_DRYHOLE[0])  
 
-
-
-# Call f_VPRIOR over array value_drill_DRYHOLE
 vprior_INPUT_demo_list = list(map(lambda vv: mymodule.f_VPRIOR([1-Pr_prior_POS_demo,Pr_prior_POS_demo], 
                                                               value_array,vv),value_drill_DRYHOLE))
-st.subheader('$Pr(Success) = Pr(\Theta=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
-st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
-st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
+st.subheader('$Pr(Success) = Pr(Geothermal=Positive)=$'+str(Pr_prior_POS_demo))  #Pr_prior_POS_demo[0]
+st.subheader('$V_{prior} =$  best action given each weighted average')
+# st.markdown("""
+# <style>
+# .big-latex {
+#     font-size:60px !important;
+# }
+# </style>
+# """, unsafe_allow_html=True)
 
+#st.write('Average outcome, using $Pr(Success)$ ~ Prior probability')
+# st.write(r'''$V_{prior} =  \max\limits_a \Sigma_{i=1}^2 Pr(\Theta = \theta_i)  v_a(\theta_i) \ \  \forall a $''')
+#stuff = '''$V_{prior}=$'''
+#st.markdown(stuff, unsafe_allow_html=True) #'<p class="big-latex"> stuff </p>'
+st.write(r'''$V_{prior} = \max\limits_a 
+            \begin{cases} Pr(positive) v_{drill}(positive) + Pr(negative)  v_{drill}(negative) &\text{if drill}\\
+            Pr(positive) v_{nothing}(positive) + Pr(negative)  v_{nothing}(negative)  =0         &\text{if do nothing}\end{cases} $''')
+#
+# st.latex(r'''x = \begin{cases}
+#    a &\text{if } b \\
+#    c &\text{if } d \\
+# \end{cases}''')
+         
+# st.write(r'''$\Theta$ =  Uncertain geologic parameter, $\theta_1$ = positive geothermal state, $\theta_2$ = negative geothermal state''')
+# st.write(r'''$a =$  Action being taken (e.g. drill or do nothing)''')
+#
 
-
-
-
-
-
-
-plt.plot(value_drill_DRYHOLE, vprior_INPUT_demo_list,'g.-', linewidth=5,label='$V_{prior}$')
-plt.ylabel(r'Average Outcome Value [\$]',fontsize=14)
-plt.xlabel('Dryhole Cost', color='darkred',fontsize=14)
-
-st.write(r'''$\Theta =  Uncertain \ geologic \ parameter $''')
-st.write(r'''$\theta_i =  ith \ possible\ geologic \ state $''')
-st.write(r'''$a =  Action \ being \ taken $''')
-st.write(r'''$i =  Outcome \ index $''')
-st.write(r'''$V_{prior} =  Prior\ Probability \ of \ Outcome \ under \ consideration \ for \ a \ given \ Feature\  $''')
 # axins3 = inset_axes(ax, width="30%", height="30%", loc=2)
 #st.write(np.mean(vprior_INPUT_demo_list), np.min(value_drill_DRYHOLE),(VPI_max+20))
 
-# Code for table with decision outcomes defined by the user.
-
-
 # Plotting VOI
 showVperfect = st.checkbox('Show Vperfect')
-
-
-# Code for plotting 'nested' images
-
-#fig, (ax1) = plt.subplots(1, 1, figsize=[6, 3])
- 
-#im1 = ax1.imshow([[1, 2], [2, 3]])
-#axins1 = inset_axes(
-    #ax1,
-    #width="33%",  # width: 50% of parent_bbox width
-    #height="33%",  # height: 5%
-    #loc="center right",
-#)
-# axins1.xaxis.set_ticks_position("bottom")
-# fig.colorbar(im1, cax=axins1, orientation="horizontal", ticks=[1, 2, 3])
-
-
-
 
 # Plotting Depth vs Value of Information
 
@@ -171,9 +149,6 @@ plt.xlabel('Well Depth (m)', color='darkred',fontsize=14)
 
 
 
-
-
-
 # Plotting text on the VOI plot
 
 txtonplot = r'$v_{a=Drill}(\Theta=Positive) =$'
@@ -184,25 +159,6 @@ ax1.text(np.min(vprior_depth), value_array[-1,-1]*0.7, txtonplot+'\${:0,.0f}'.fo
          verticalalignment='top')#, bbox=dict(fc="none"))
 
 # Plotting the inset axes with drilling cost curve
-
-
-#axins1 = inset_axes(
- #   ax1,
-  #  width="33%",  # width: 50% of parent_bbox width
-   # height="33%",  # height: 5%
-    #loc="center right",
-#
-
-#axins1.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,color = 'red')
-
-#plt.ylabel(r'Average Drilling Cost [\$]',fontsize=7)
-#plt.xlabel('Depth (m)', color='darkred',fontsize=7)
-#formatter = ticker.ScalarFormatter()
-#formatter.set_scientific(False)
-# ax.yaxis.set_major_formatter(formatter)
-#axins1.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
-#axins1.xaxis.set_major_formatter(formatter)
-#axins1.xaxis.set_major_formatter('{x:0,.0f}')
 
 if showVperfect:  
     VPIlist = list(map(lambda uu: mymodule.Vperfect(Pr_prior_POS_demo, value_array,uu),value_drill_DRYHOLE))
@@ -221,8 +177,6 @@ ax1.yaxis.set_major_formatter('${x:0,.0f}') #:0,.0f
 ax1.xaxis.set_major_formatter(formatter)
 ax1.xaxis.set_major_formatter('{x:0,.0f}')
 
-
-
 axins1 = inset_axes(
     ax1,
     width="28%",  # width: 50% of parent_bbox width
@@ -230,7 +184,7 @@ axins1 = inset_axes(
     loc="center right",
 )
 
-axins1.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,color = 'red')
+axins1.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5)#,color = 'red')
 
 #plt.ylabel(r'Average Drilling Cost [\$]',fontsize=7)
 plt.xlabel('Depth (m)', color='darkred',fontsize=7)
@@ -370,10 +324,7 @@ if uploaded_files is not None:
         # Likelihood via KDE estimate
         predictedLikelihood_pos, predictedLikelihood_neg, x_sampled, count_ij= mymodule.likelihood_KDE(X_train,X_test, y_train, y_test,x_cur, best_params)
 
-        #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
-        #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
-
-        
+              
         #st.write('*Given that we know the TRUE GEOTHERMAL OUTCOME (remember "$|$" stands for "given"), what is the likelihood of the label GIVEN the data (X) ')
         #st.subheader(' :violet['+r'''$Pr(\Theta = \theta_i | X =x_j)$'''+'] ~\
         #             :blue['+r'''$Pr(\Theta = \theta_i)$'''+'] \
@@ -384,141 +335,53 @@ if uploaded_files is not None:
         st.header('How much is this imperfect data worth?')
         st.subheader(':point_down: :violet[Posterior]~:blue[Prior]:point_up_2: x Likelhood :arrow_heading_up:')
         
-       
-        
-        # # DO NOT USEmymodule.marginal( because it's passing unscale likelihood!!!)
+        # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
+        post_input, post_uniform = mymodule.Posterior_via_NaiveBayes(Pr_prior_POS,X_train, X_test, y_train, y_test, x_sampled, x_cur)
+                
+        # # DO NOT USEmymodule.marginal( because it's passing unscaled likelihood!!!)
         # # Pr_Marg = mymodule.marginal(Pr_prior_POS, predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
         Pr_InputMarg, Pr_UnifMarg, Prm_d_Input, Prm_d_Uniform = mymodule.Posterior_by_hand(Pr_prior_POS,predictedLikelihood_pos, predictedLikelihood_neg, x_sampled)
-        # st.write(np.shape(Pr_Marg),Pr_Marg[0,-20:],Pr_Marg[1,-20:])
         
+        # New plot for normalized likelihood: Modeled after Likelihood via KDE estimate
+        mymodule.Scaledlikelihood_KDE(Pr_prior_POS,predictedLikelihood_neg, predictedLikelihood_pos,X_train,X_test, y_train, y_test,x_cur,x_sampled, best_params)
 
-
-        # New plot for normalized likelihood
-        
-        
-
-        kde_pos = KernelDensity(bandwidth=best_params['bandwidth'], kernel='gaussian') # best_parameters['bandwidth'] bandwidth=0.3
-        kde_neg = KernelDensity(bandwidth=best_params['bandwidth'], kernel='gaussian')
-        
-        
-
-        # if np.shape(X_train)[1]>2:
-        # if train_test only all features
-        # two_d = X_train.iloc[:,x_cur] 
-        # x_d = np.linspace(min(X_train.iloc[:, x_cur]), max(X_train.iloc[:, x_cur]), 100) 
-        # else:
-        # if train_test only gets selected x_cur
-        forkde_pos = X_train[y_train>0]#.iloc[:,x_cur] #cur_feat
-        forkde_neg = X_train[y_train==0]; 
-
-        # two_d = X_train #.iloc[:,x_cur] #cur_feat
-        forkde_pos_np = forkde_pos.values
-        forkde_neg_np = forkde_neg.values; 
-        kde_pos.fit(forkde_pos_np[:,np.newaxis])
-        kde_neg.fit(forkde_neg_np[:,np.newaxis])
-        
-        # nbins = 100
-        x_sampled = np.arange(np.min(np.concatenate([X_train,X_test])),
-                        np.max(np.concatenate([X_train,X_test])),
-                        best_params['bandwidth']) #np.linspace(min(X_train), max(X_train), nbins) 
-        nbins=len(x_sampled)
-        
-
-        Likelihood_logprob_pos = kde_pos.score_samples(x_sampled[:,np.newaxis]) #.score_samples
-        Likelihood_logprob_neg = kde_neg.score_samples(x_sampled[:,np.newaxis])
-        
-
-
-        likelihood = np.transpose(np.vstack((predictedLikelihood_neg, predictedLikelihood_pos)))
-        Pr_InputMarg2 = np.sum(likelihood,1)
-
-        InputMarg_weight = np.kron(Pr_InputMarg2[:,np.newaxis],np.ones((1,np.shape([1-Pr_prior_POS,Pr_prior_POS])[0]))) # should be num classes, num of Thetas
-        #Prm_like_Input = likelihood / InputMarg_weight
-        #InputMarg_weight = np.exp(InputMarg_weight)/np.sum(np.exp(InputMarg_weight))
-        Pr_InputMarg2 = np.sum(likelihood,1)
-        
-        
-        #likelihood = np.exp(likelihood)/np.sum(np.exp(likelihood))
-        #predictedLikelihood_neg = np.exp(predictedLikelihood_neg)/np.sum(np.exp(predictedLikelihood_neg))
-        
-        
-        #norm_pos1 = ((predictedLikelihood_pos* forkde_pos.shape[0]))
-        #norm_neg1 = ((predictedLikelihood_neg* forkde_neg.shape[0]))
-        
-
-        
-        
-        
-
-        
-
-        X_input_prior_weight_POS = np.outer(np.ones((np.shape(likelihood)[0],)),Prm_d_Input )
-        X_input_prior_weight_NEG = np.outer(np.ones((np.shape(likelihood)[0],)),1.0-Prm_d_Input )
-        X_input_prior_weight= np.hstack((X_input_prior_weight_NEG,X_input_prior_weight_POS))
-        valneg = predictedLikelihood_pos/ Pr_InputMarg
-        
-       
-
-        #norm_pos = norm_pos1
-        #norm_neg= norm_neg1
-
-       
-        
-
-        
-        fig20, ax2 = plt.subplots(figsize=(15,8),ncols=1,nrows=1) # CHANGED to one subplot
-        # ax2.hist(X_test,alpha=0.5,color='grey',label='X_test',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth,hatch='/')
-        #n_out = ax2.hist([X_test[y_test>0],X_test[y_test==0]], alpha=0.5,facecolor=['g','r'],
-        n_out = ax2.hist([X_test[y_test>0]], alpha=0.3,facecolor='g',
-                        histtype='bar', hatch='O',label='$~Pr(X|\Theta=Positive_{geothermal}$)',bins=x_sampled) #tacked,bins rwidth= kde_pos.bandwidth) #rwidth= kde_pos.bandwidth,
-        posi = n_out[0]
-        posi = np.append(posi,0)
-        
-        n_out = ax2.hist(X_test[y_test==0], alpha=0.3,facecolor='r',
-                        histtype='barstacked',hatch='/',label='$~Pr(X|\Theta=Negative_{geothermal}$)',bins=x_sampled) #rwidth= kde_pos.bandwidth (X_test.max() - X_test.min()) / 
-                        
-        ax2.legend(fontsize=18)
-        ax2.set_ylabel('Empirical data counts', fontsize=18)
-        ax2.tick_params(labelsize=20)
-        ax2_ylims = ax2.axes.get_ylim()  
-
-        negi = n_out[0]
-        negi = np.append(negi,0)
-        tot_posi = np.sum(posi)
-        tot_negi = np.sum(negi)
-        tot = posi+negi
-        tot_all = np.sum(tot)
-       
-       
-        norm_pos1 = ((predictedLikelihood_pos*Pr_prior_POS))
-        norm_neg1 = ((predictedLikelihood_neg*(1-Pr_prior_POS))) # Scaling by prior
-
-        ax1 = plt.twinx(ax=ax2)
-        ax1.fill_between(x_sampled, norm_pos1, alpha=0.3,color='green')
-        ax1.plot(x_sampled,norm_pos1,'g.')
-        ax1.fill_between(x_sampled, norm_neg1, alpha=0.3,color='red')
-        ax1.plot(x_sampled,norm_neg1,'r.')
-        ax1.legend(loc=0, fontsize=17)
-        ax1.set_ylabel('Likelihood (Scaled by Prior) $~Pr(x | y=Geothermal_{neg/pos}$', fontsize=25)#, rotation=-90)
-        ax2.set_xlabel(str(x_cur), fontsize=18)
-        ax1.tick_params(labelsize=20)
-        ax_ylims = ax1.axes.get_ylim()  
-        #print('ax_ylims',ax_ylims)
-        #st.write('ax_ylims',ax_ylims)
-        ax1.set_ylim(0,ax_ylims[1])
-    
-        # ax1.set_ylim(0,ax2_ylims[1])
-        
-        # #.iloc[:,feat4]
-        # # n_out = plt.hist([X_test[y_test>0],X_test[y_test==0]], color=['r','g'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
-        # #.iloc[:,feat4]
-        # n_out = axes[1].hist([X_test[y_test>0],X_test[y_test==0]], color=['g','r'],histtype='barstacked',rwidth=(X_test.max() - X_test.min()) / kde_pos.bandwidth)
-        st.pyplot(fig20)
-
-        # Normalized Likelihood code ends here.
-
-        
         mymodule.Posterior_Marginal_plot(Prm_d_Input, Prm_d_Uniform, Pr_InputMarg, x_cur, x_sampled) # WAS inputting: post_input, post_uniform, Pr_Marg, x_cur, x_sampled)
+
+        # # # # # # VALUE OUTCOMES # # # # # # # # # #
+        newValuedf = pd.DataFrame({
+               "action": ['do nothing','drill'],
+                "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
+                "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
+        )
+
+        # list = 
+        # idx= pd.Index(list)
+        # newValuedf.set_index(idx)
+        newValuedf.style.set_properties(**{'font-size': '35pt'}) # this doesn't seem to work
+        #bigdf.style.background_gradient(cmap, axis=1)\
+
+        # Code to be written to input these values
+        original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
+        st.markdown(original_title, unsafe_allow_html=True)
+        edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
+
+        pos = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
+        neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
+
+        value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos, cost_drill_neg = neg) # Karthik Changed here to reflect new values
+        #st.write('value_array', value_array)
+
+        #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
+        value_drill_DRYHOLE = np.linspace(100, -1e6,10)
+
+        # This function can be called with multiple values of "dry hole"
+        vprior_unif_out = mymodule.f_VPRIOR([1-Pr_prior_POS,Pr_prior_POS], value_array) #, value_drill_DRYHOLE[-1]       
+                       
+        #st.subheader(r'''$V_{prior}$ '''+'${:0,.0f}'.format(vprior_unif_out).replace('$-','-$'))
+
+        VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
+        # st.subheader(r'''$VOI_{perfect}$ ='''+str(locale.currency(VPI, grouping=True )))
+        #st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
 
         # Table for decision metrics
         # POSTERIOR via_Naive_Bayes: Draw back here the marginal not using scaled likelihood..
@@ -557,7 +420,6 @@ if uploaded_files is not None:
         VPI = mymodule.Vperfect(Pr_prior_POS, value_array)
 
         # VII_unif = mymodule.f_VIMPERFECT(post_uniform, value_array,Pr_UnifMarg)
-        
         VII_input = mymodule.f_VIMPERFECT(Prm_d_Input, value_array, Pr_InputMarg)
         VII_unifPrior = mymodule.f_VIMPERFECT(Prm_d_Uniform, value_array, Pr_UnifMarg)
         
@@ -576,10 +438,6 @@ if uploaded_files is not None:
         #original_title = '<p style="font-family:Courier; color:Green; font-size: 30px;"> Enter economic values for your decision</p>'
         #st.markdown(original_title, unsafe_allow_html=True)
         #edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
-
-        
-        
-    
         
         #st.data_editor(value_array_df,
                          #column_config={
@@ -598,14 +456,15 @@ if uploaded_files is not None:
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
         st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
-        st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
+        # st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
         
-
         MI_post, NMI_post = mymodule.f_MI(Prm_d_Input,Pr_InputMarg)
-        #st.write('Mutual Information:', MI_post)
-        #st.write('Normalized Mutual Information:', NMI_post)
-        #st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
-        #dataframe4clipboard = pd.DataFrame([[VII_input,NMI_post,accuracy]])#,  columns=['VII','NMI','accuracy'])
+        #Basic question: How far apart (different) are two distributions P and Q? Measured through distance & divergences
+        #https://nobel.web.unc.edu/wp-content/uploads/sites/13591/2020/11/Distance-Divergence.pdf
+        # st.write('Mutual Information:', MI_post)
+        # st.write('Normalized Mutual Information:', NMI_post)
+        # st.write(accuracy,(VII_input,MI_post,accuracy)) #['bandwidth']
+        dataframe4clipboard = pd.DataFrame([[VII_input,NMI_post,accuracy]])#,  columns=['VII','NMI','accuracy'])
         #st.write(dataframe4clipboard)
        #dataframe4clipboard.to_clipboard(excel=True,index=False)
 
