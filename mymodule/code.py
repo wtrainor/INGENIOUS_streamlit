@@ -330,7 +330,7 @@ def Scaledlikelihood_KDE(Pr_prior_POS, Likelihood_neg, Likelihood_pos, X_train,X
     ax1.tick_params(labelsize=20)
     ax_ylims = ax1.axes.get_ylim()  
     #print('ax_ylims',ax_ylims)
-    st.write('ax_ylims',ax_ylims)
+    # st.write('ax_ylims',ax_ylims)
     ax1.set_ylim(0,ax_ylims[1])
     # ax1.set_ylim(0,ax2_ylims[1])
     
