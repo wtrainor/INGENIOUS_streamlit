@@ -79,7 +79,7 @@ st.markdown(original_title, unsafe_allow_html=True)
 edited_df = st.data_editor(newValuedf1,hide_index=True,use_container_width=True)
 
 pos_outcome = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
-st.write('pos',pos)
+st.write('pos_outcome',pos_outcome)
 #neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
 value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos_outcome, cost_drill_neg = -1e-6)
 
