@@ -355,10 +355,10 @@ if uploaded_files is not None:
         st.markdown(original_title, unsafe_allow_html=True)
         edited_df = st.data_editor(newValuedf,hide_index=True,use_container_width=True)
 
-        pos = np.float(edited_df[['Hydrothermal Resource (positive)']].values[1])
-        neg = np.float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
+        pos_drill_outcome = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
+        neg_drill_outcome = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
 
-        value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos, cost_drill_neg = neg) # Karthik Changed here to reflect new values
+        value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos_drill_outcome, cost_drill_neg = neg_drill_outcome) # Karthik Changed here to reflect new values
         #st.write('value_array', value_array)
 
         #f_VPRIOR(X_unif_prior, value_array, value_drill_DRYHOLE[-1])  
