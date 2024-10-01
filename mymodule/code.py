@@ -17,9 +17,9 @@ from sklearn import metrics
 
 # st.write('X_train',np.shape(X_train))
 # st.write('seaborn version',sns.__version__)
-st.write('pandas version',pd.__version__)
-st.write('streamlit version',st.__version__)
-st.write('numpy version',np.__version__)
+# st.write('pandas version',pd.__version__)
+# st.write('streamlit version',st.__version__)
+# st.write('numpy version',np.__version__)
 # st.write('matplotlib version',sns.__version__)
 # import sklearn
 # st.write('scikit',sklearn.show_versions()) # sklearn.__version__)
@@ -508,7 +508,7 @@ def make_value_array(count_ij, profit_drill_pos= 2e6, cost_drill_neg = -1e6):
     value_array[0,:] = [0, 0]
     value_array[1,:] = [cost_drill_neg, profit_drill_pos] 
     
-    index_labels = ['do nothing','drill']
+    index_labels = ['walk away','drill']
     value_array_df = pd.DataFrame(value_array,index=index_labels,columns=['negative','positive'])
     
     return value_array, value_array_df
