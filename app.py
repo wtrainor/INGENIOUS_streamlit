@@ -206,7 +206,9 @@ st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#3
 with st.sidebar:
     attribute0 = None        
     # LOCATION OF THIS FILE 
-    uploaded_files = st.file_uploader("Upload two data files,namely a Positive Label file (\'POS_\' :fire:) & a Negative Label (\'NEG_\':thumbsdown:) file",type=['csv'],accept_multiple_files=True)
+    uploaded_files = st.file_uploader(\
+        "Upload two data files,namely a Positive Label file (\'POS_\' :fire:) & a Negative Label (\'NEG_\':thumbsdown:) file ", \
+                                      type=['csv'],accept_multiple_files=True)
     st.page_link("https://github.com/wtrainor/INGENIOUS_streamlit/tree/Karthik/File%20Template",label='Click here for file template')
     count_neg= 0
     count_pos = 0
