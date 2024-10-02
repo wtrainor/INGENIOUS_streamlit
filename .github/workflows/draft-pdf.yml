@@ -21,3 +21,8 @@ jobs:
           # PDF. Note, this should be the same directory as the input
           # paper.md
           path: paper/paper.pdf
+on:
+  push:
+    paths:
+      - paper/**
+      - .github/workflows/draft-pdf.yml

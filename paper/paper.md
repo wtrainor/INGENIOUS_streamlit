@@ -10,6 +10,9 @@ authors:
     orcid: 0000-0002-5726-3886
     equal-contrib: true
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
+    name: Karthik Menon (Author Without ORCID)
+    equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
+    affiliation: 2
   - name: Sierra Rosario (Author Without ORCID)
     equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
     affiliation: 2
