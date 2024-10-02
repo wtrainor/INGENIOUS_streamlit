@@ -62,8 +62,7 @@ ax.xaxis.set_major_formatter('{x:0,.0f}')
 
 # Code for table with decision outcomes defined by the user.
 newValuedf1 = pd.DataFrame({
-               "action": ['walk away','drill'],
-                
+               "action": ['walk away','drill'],               
                 "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
         )
 
@@ -208,7 +207,7 @@ with st.sidebar:
     attribute0 = None        
     # LOCATION OF THIS FILE 
     uploaded_files = st.file_uploader("Upload two data files,namely a Positive Label file (\'POS_\' :fire:) & a Negative Label (\'NEG_\':thumbsdown:) file",type=['csv'],accept_multiple_files=True)
-    
+    st.page_link("https://github.com/wtrainor/INGENIOUS_streamlit/tree/Karthik/File%20Template",label='Click here for file template')
     count_neg= 0
     count_pos = 0
     if uploaded_files is not None and len(uploaded_files)==2:
@@ -408,7 +407,8 @@ if uploaded_files is not None:
          #)
         
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
-        st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
+        st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI-vprior_unif_out).replace('$-','-$'))
+        st.subheader(r'''$V_{perfect}$='''+'${:0,.0f}'.format(VPI).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
         # st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
         
