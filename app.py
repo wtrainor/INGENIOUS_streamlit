@@ -62,7 +62,7 @@ ax.xaxis.set_major_formatter('{x:0,.0f}')
 
 # Code for table with decision outcomes defined by the user.
 newValuedf1 = pd.DataFrame({
-               "action": ['do nothing','drill'],
+               "action": ['walk away','drill'],
                 
                 "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
         )
@@ -79,7 +79,7 @@ st.markdown(original_title, unsafe_allow_html=True)
 edited_df = st.data_editor(newValuedf1,hide_index=True,use_container_width=True)
 
 pos_outcome = float(edited_df[['Hydrothermal Resource (positive)']].values[1])
-st.write('pos_outcome',pos_outcome)
+
 #neg = float(edited_df[['No Hydrothermal Resource (negative)']].values[1])
 value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_pos= pos_outcome, cost_drill_neg = -1e-6)
 
@@ -208,7 +208,7 @@ with st.sidebar:
     attribute0 = None        
     # LOCATION OF THIS FILE 
     uploaded_files = st.file_uploader("Upload two data files,namely a Positive Label file (\'POS_\' :fire:) & a Negative Label (\'NEG_\':thumbsdown:) file",type=['csv'],accept_multiple_files=True)
-    
+    st.page_link("https://github.com/wtrainor/INGENIOUS_streamlit/tree/Karthik/File%20Template",label='Click here for file template')
     count_neg= 0
     count_pos = 0
     if uploaded_files is not None and len(uploaded_files)==2:
@@ -339,7 +339,7 @@ if uploaded_files is not None:
 
         # # # # # # VALUE OUTCOMES # # # # # # # # # #
         newValuedf = pd.DataFrame({
-               "action": ['do nothing','drill'],
+               "action": ['walk away','drill'],
                 "No Hydrothermal Resource (negative)": [0, value_array_df.iloc[1,0]*10],
                 "Hydrothermal Resource (positive)": [0,value_array_df.iloc[1,1]*10]}   
         )
@@ -408,7 +408,8 @@ if uploaded_files is not None:
          #)
         
         st.subheader(r'''$V_{imperfect}$='''+'${:0,.0f}'.format(VII_input).replace('$-','-$'))
-        st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI).replace('$-','-$'))
+        st.subheader('Vprior  \${:0,.0f},\t   VOIperfect = \${:0,.0f}'.format(vprior_unif_out,VPI-vprior_unif_out).replace('$-','-$'))
+        st.subheader(r'''$V_{perfect}$='''+'${:0,.0f}'.format(VPI).replace('$-','-$'))
         # st.write('with uniform marginal', locale.currency(VII_unifMarginal, grouping=True ))
         # st.write('with uniform Prior', '${:0,.0f}'.format(VII_unifPrior).replace('$-','-$'))
         

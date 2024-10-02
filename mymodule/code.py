@@ -17,9 +17,9 @@ from sklearn import metrics
 
 # st.write('X_train',np.shape(X_train))
 # st.write('seaborn version',sns.__version__)
-st.write('pandas version',pd.__version__)
-st.write('streamlit version',st.__version__)
-st.write('numpy version',np.__version__)
+#st.write('pandas version',pd.__version__)
+#st.write('streamlit version',st.__version__)
+#st.write('numpy version',np.__version__)
 # st.write('matplotlib version',sns.__version__)
 # import sklearn
 # st.write('scikit',sklearn.show_versions()) # sklearn.__version__)
