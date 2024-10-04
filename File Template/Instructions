@@ -1,1 +1,0 @@
-Upload a positive and negative file using the sample files as a template. The pos file should have a column named 'PosSite_Distance' and neg file 'NegSite_Distance' to work properly.
