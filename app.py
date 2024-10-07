@@ -46,10 +46,10 @@ value_array, value_array_df = mymodule.make_value_array(count_ij, profit_drill_p
 value_drill_DRYHOLE = np.array([-1.9e6, -2.8e6, -4.11e6, -5.81e6, -7.9e6, -10.4e6])
 
 vprior_depth = np.array([1000,2000,3000,4000,5000,6000])
-value_drill_pos = value_drill_DRYHOLE
+
 firstfig, ax = plt.subplots()
 #firstfig1, axe = plt.subplots(1,2)
-plt.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5,label='$V_{prior}$')#, color = 'red')
+plt.plot(vprior_depth,value_drill_DRYHOLE,'g.-', linewidth=5,label='$V_{prior}$')#, color = 'red')
 plt.ylabel(r'Average Drilling Cost [\$]',fontsize=14)
 plt.xlabel('Depth (m)', color='darkred',fontsize=14)
 formatter = ticker.ScalarFormatter()
@@ -179,7 +179,7 @@ axins1 = inset_axes(
     loc="center right",
 )
 
-axins1.plot(vprior_depth,value_drill_pos,'g.-', linewidth=5)#,color = 'red')
+axins1.plot(vprior_depth,value_drill_DRYHOLE,'g.-', linewidth=5)#,color = 'red')
 
 #plt.ylabel(r'Average Drilling Cost [\$]',fontsize=7)
 plt.xlabel('Depth (m)', color='darkred',fontsize=7)
