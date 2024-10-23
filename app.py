@@ -26,7 +26,8 @@ st.header('Interactive Demonstration of Relationship between Value of Informatio
 
 
 #Code below plots the Decision Tree image from kmenon's github
-url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/dtree.png'
+#url = 'https://raw.githubusercontent.com/kmenon211/Geophysics-segyio-python/master/dtree.png'
+url = 'https://raw.githubusercontent.com/kmenon211/raw/main/File Template/dtree.png'
 response = requests.get(url)
 image= Image.open(BytesIO(response.content))
 st.image(image, caption='Sample BinaryDecision Tree with Binary Geothermal Resource')
